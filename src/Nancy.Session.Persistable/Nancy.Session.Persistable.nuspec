@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Nancy.Session.Persistable</id>
+    <version>0.8.3</version>
+    <title>Nancy.Session.Persistable</title>
+    <authors>Daniel J. Summers</authors>
+    <owners>Daniel J. Summers</owners>
+    <licenseUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>ISession and Request extensions to support persistable sessions</description>
+    <releaseNotes>Initial release of interface and extensions ported from RethinkDB implementation</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Nancy Session</tags>
+  </metadata>
+</package>
