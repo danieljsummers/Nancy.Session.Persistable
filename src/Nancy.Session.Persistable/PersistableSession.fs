@@ -15,6 +15,9 @@ type IPersistableSession =
   /// Get a strongly-typed value from the session
   abstract Get<'T> : string -> 'T
 
+  /// Get a strongly-typed value from the session, or the given value if it does not exist
+  abstract GetOrDefault<'T> : string * 'T -> 'T
+
 
 /// A base class for persistable sessions
 type BasePersistableSession(values : IDictionary<string, obj>) =
@@ -23,11 +26,14 @@ type BasePersistableSession(values : IDictionary<string, obj>) =
   new() = BasePersistableSession(Dictionary<string, obj>())
 
   interface IPersistableSession with
-    member this.Get<'T> key = match this.[key] with
-                              | null          -> Unchecked.defaultof<'T>
-                              | :? 'T as item -> item
-                              | item          -> try JsonConvert.DeserializeObject<'T>(string item)
-                                                 with | _ -> Unchecked.defaultof<'T>
+    member this.GetOrDefault<'T> (key, value) =
+      match this.[key] with
+      | null          -> value
+      | :? 'T as item -> item
+      | item          -> try JsonConvert.DeserializeObject<'T>(string item)
+                          with | _ -> value
+
+    member this.Get<'T> key = this.GetOrDefault (key, Unchecked.defaultof<'T>)
 
   /// <summary>
   /// Get a strongly-typed value from the session
@@ -37,6 +43,14 @@ type BasePersistableSession(values : IDictionary<string, obj>) =
   abstract Get<'T> : string -> 'T
   default this.Get<'T> key = (this :> IPersistableSession).Get<'T> key
 
+  /// <summary>
+  /// Get a strongly-typed value from the session
+  /// </summary>
+  /// <param name="key">The key for the session value</param>
+  /// <param name="value">The default value to return if the key is not found or it does not deserialize</param>
+  /// <returns>The value from the session, or the default value if it cannot be obtained from the session</returns>
+  abstract GetOrDefault<'T> : string * 'T -> 'T
+  default this.GetOrDefault<'T> (key, value : 'T) = (this :> IPersistableSession).GetOrDefault (key, value)
 
 /// Base configuration options for persistable sessions
 [<AllowNullLiteral>]

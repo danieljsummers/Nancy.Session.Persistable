@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Nancy.Session.Persistable</id>
-    <version>0.8.4</version>
+    <version>0.8.5</version>
     <title>Nancy.Session.Persistable</title>
     <authors>Daniel J. Summers</authors>
     <owners>Daniel J. Summers</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>ISession and Request extensions to support persistable sessions</description>
-    <releaseNotes>Abstracted session-Id-to-cookie logic and session expiration configuration parameters to this common project</releaseNotes>
+    <releaseNotes>Added GetOrDefault to IPersistableSession interface (and default implementation)</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Nancy Session</tags>
   </metadata>
