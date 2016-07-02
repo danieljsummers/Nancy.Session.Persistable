@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Nancy.Session.Persistable</id>
-    <version>0.8.3</version>
+    <version>0.8.4</version>
     <title>Nancy.Session.Persistable</title>
     <authors>Daniel J. Summers</authors>
     <owners>Daniel J. Summers</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>ISession and Request extensions to support persistable sessions</description>
-    <releaseNotes>Initial release of interface and extensions ported from RethinkDB implementation</releaseNotes>
+    <releaseNotes>Abstracted session-Id-to-cookie logic and session expiration configuration parameters to this common project</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Nancy Session</tags>
   </metadata>
