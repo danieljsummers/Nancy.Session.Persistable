@@ -52,7 +52,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="PersistableSession.fs" />
+    <Compile Include="PersistableSessionConfiguration.fs" />
     <Compile Include="RequestExtensions.fs" />
+    <Compile Include="PersistableSessions.fs" />
     <Compile Include="CookieUtils.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
