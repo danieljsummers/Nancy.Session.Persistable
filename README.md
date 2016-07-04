@@ -1,22 +1,127 @@
 # Nancy.Session.Persistable
 
-The [Nancy.Session.RethinkDB](https://github.io/danieljsummers/Nancy.Session.RethinkDB) project is currently in
-development.  This project is a dependency of that project, and contains interfaces and extension methods that are
-not specific to a RethinkDB implementation of a session store.  The hope is that it can be reused to streamline
-development of other session stores (MongoDB, Redis, PostgreSQL, and Entity Framework are all on the possibly-to-do
-list).
+This is a community project that provides the majority of a session store implementation for Nancy, the lean-and-mean
+web framework that runs under the .NET framework.  It also provides extensions to the Nancy Request object that allow
+strongly-typed retrieval of objects from the session.
 
-Currently, this provides:
-* an ```IPersistableSession``` interface that specifies a strongly-typed ```Get``` method
-* a ```BasePersistableSession``` that implements ```IPersistableSession```; the default implementation of the virtual
-  ```Get``` method will attempt to deserialize possibly JSON-serialized objects if the type in the session is not the
-  type requested.  *(This is how RethinkDB deserializes the session dictionary; the dictionary is an ```IDictionary```,
-  but some items may still be ```JArray```s or ```JToken```s.)*
-* the ```Request.PersistableSession``` property (F#) / extension method (C# / VB.NET) that returns an
-  ```IPersistableSession``` instead of the ```ISession``` returned by the ```Request.Session``` property.  As
-  ```IPersistableSession``` inherits from ```ISession```, they may be used interchangeable unless you are trying to
-  get a strongly-typed value from the session.
+## Get It [![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Persistable.svg)]
+This package will be installed when you install any of the available back-end storage packages. Currently available:
+* RethinkDB | [project](https://github.com/danieljsummers/Nancy.Session.RethinkDB) | 
+  [package](https://nuget.org/packages/Nancy.Session.RethinkDB) [![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.RethinkDB.svg)]
+* InMemory | [project](https://github.com/danieljsummers/Nancy.Session.InMemory) |
+  [package](https://nuget.org/packages/Nancy.Session.InMemory) [![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.InMemory.svg)]
 
-----
+_NOTE: v0.8.x builds are done in debug mode, and may have some console logging during use. For v0.9.x, we will switch
+to release mode, and these logs will be gone.  Also, while the API is currently thought stable, it may change up until
+a 1.0 release._
 
-More documentation will be forthcoming.
+_NOTE 2: Planned future implementations include MongoDB, Redis, Entity Framework, and ADO.NET._
+
+## Enable It
+
+To enable sessions, you have to
+[override the default Nancy bootstrapper](https://github.com/NancyFx/Nancy/wiki/Bootstrapper).  This sounds way
+scarier than it actually is; you can do it in just a few lines of code.  In following their lead, persistable sessions
+are fully [SDHP](https://github.com/NancyFx/Nancy#the-super-duper-happy-path)-compliant.
+
+You can do it in C#...
+```csharp
+namespace ExampleNancyApp
+{
+    using Nancy;
+    using Nancy.Bootstrapper;
+    using Nancy.Session.Persistable;
+    using Nancy.TinyIoc;
+
+    public class ApplicationBootstrapper : DefaultNancyBootstrapper
+    {
+        protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
+        {
+            base.ApplicationStartup(container, pipelines);
+
+            // Enable sessions
+            PersistableSessions.Enable(pipelines, [config]);
+        }
+    }
+}
+```
+
+... or F# ...
+
+```fsharp
+module ExampleNancyApp
+
+open Nancy
+open Nancy.Bootstrapper
+open Nancy.Session.Persistable
+
+type ApplicationBootstrapper() =
+  inherit DefaultNancyBootstrapper()
+  override this.ApplicationStartup (container, pipelines) =
+    base.ApplicationStartup (container, pipelines)
+    // Enable sessions
+    PersistableSessions.Enable (pipelines, [config])
+```
+
+... or even Visual Basic.NET!
+
+```vb.net
+Imports Nancy
+Imports Nancy.Bootstrapper
+Imports Nancy.Session.Persistable
+Imports Nancy.TinyIoc
+
+Namespace ExampleNancyApp
+
+    Public Class ApplicationBootstrapper
+        Inherits DefaultNancyBootstrapper
+
+        Protected Overrides Sub ApplicationStartup(container As TinyIoCContainer, pipelines As IPipelines)
+            MyBase.ApplicationStartup(container, pipelines)
+            ' Enable sessions
+            PersistableSessions.Enable(pipelines, [config])
+        End Sub
+
+    End Class
+
+End Namespace
+```
+
+The store-specific ```[config]``` object is detailed in each implementation project.
+
+_Retrieving the current session needs to happen early in the request cycle, and persisting it needs to happen as late as
+possible.  So, in your bootstrapper, put the ```PersistableSessions.Enable``` call as late as possible._
+
+
+## Use It
+
+The project adds a ```PersistableSession``` property (F#) or method (C# / VB.NET) on the Nancy ```Request``` object.
+This returns an ```IPersistableSession```, which extends Nancy's ```ISession``` interface with a few additional methods.
+
+* **Get&lt;T&gt;()** can be used to retrieve a strongly-typed item from the session.  If the item does not exist, this
+method will return ```null``` (or a default value for value types).
+
+* **GetOrDefault&lt;T&gt;()** works the same way as ```Get<T>()```, but you specify the value you want back if there's
+  not a value in the session.
+
+## Configure It
+
+Each implementation comes with its own configuration object, but they all share some common options.
+
+**UseRollingSessions** (bool - default: true)
+
+A rolling session is one where the expiration is reset every time the session is accessed, making the expiration into a
+rolling window. A non-rolling session is only good from the time of its creation, and goes away at the end of that
+period, no matter how active the session is.
+
+**Expiry** (TimeSpan - default: 2 hours)
+
+This is how long (based on either creation or access time) the session will last.
+
+**ExpiryCheckFrequency** (TimeSpan - default: 1 minute)
+
+This is how frequently expired sessions are removed from the store.  Each attempt to load or save a session can trigger
+this, but this throttle keeps it from running on every request.
+
+---
+

@@ -2,15 +2,15 @@
 <package >
   <metadata>
     <id>Nancy.Session.Persistable</id>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
     <title>Nancy.Session.Persistable</title>
     <authors>Daniel J. Summers</authors>
     <owners>Daniel J. Summers</owners>
     <licenseUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>ISession and Request extensions to support persistable sessions</description>
-    <releaseNotes>Added GetOrDefault to IPersistableSession interface (and default implementation)</releaseNotes>
+    <description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</description>
+    <releaseNotes>Major API change; this package now contains everything but the actual persistence implementation</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Nancy Session</tags>
   </metadata>

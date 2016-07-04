@@ -55,7 +55,6 @@
     <Compile Include="PersistableSessionConfiguration.fs" />
     <Compile Include="RequestExtensions.fs" />
     <Compile Include="PersistableSessions.fs" />
-    <Compile Include="CookieUtils.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
