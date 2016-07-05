@@ -8,6 +8,8 @@ strongly-typed retrieval of objects from the session.  It uses cookies to associ
 This package will be installed when you install any of the available back-end storage packages. Currently available:
 * RethinkDB | [project](https://github.com/danieljsummers/Nancy.Session.RethinkDB) | 
   [package](https://nuget.org/packages/Nancy.Session.RethinkDB) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.RethinkDB.svg)
+* MongoDB | [project](https://github.com/danieljsummers/Nancy.Session.MongoDB) | 
+  [package](https://nuget.org/packages/Nancy.Session.MongoDB) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.MongoDB.svg)
 * InMemory | [project](https://github.com/danieljsummers/Nancy.Session.InMemory) |
   [package](https://nuget.org/packages/Nancy.Session.InMemory) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.InMemory.svg)
 
@@ -15,7 +17,7 @@ _NOTE: v0.8.x builds are done in debug mode, and may have some console logging d
 to release mode, and these logs will be gone.  Also, while the API is currently thought stable, it may change up until
 a 1.0 release._
 
-_NOTE 2: Planned future implementations include MongoDB, Redis, Entity Framework, and ADO.NET._
+_NOTE 2: Planned future implementations include Redis, Entity Framework, and ADO.NET._
 
 ## Enable It
 
@@ -87,7 +89,9 @@ Namespace ExampleNancyApp
 End Namespace
 ```
 
-The store-specific ```[config]``` object is detailed in each implementation project.
+The store-specific ```[config]``` object is detailed in each implementation project.  Each of these objects takes an
+optional ```Nancy.Cryptography.CryptographyConfiguration``` parameter that is used to control the cryptography used for
+the session Id cookie.  If it is not specified, it uses a default configuration.
 
 _Retrieving the current session needs to happen early in the request cycle, and persisting it needs to happen as late as
 possible.  So, in your bootstrapper, put the ```PersistableSessions.Enable``` call as late as possible._
