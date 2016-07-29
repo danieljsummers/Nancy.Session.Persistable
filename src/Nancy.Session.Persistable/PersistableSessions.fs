@@ -13,9 +13,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   do
     match cfg with
     | null -> nullArg "cfg"
-    | _    -> match cfg.IsValid with
-              | true -> ()
-              | _    -> invalidArg "cfg" "configuration is invalid"
+    | _ -> match cfg.IsValid with true -> () | _ -> invalidArg "cfg" "configuration is invalid"
     cfg.Store.SetUp ()
 
   /// The date/time we last cleaned out expired sessions
@@ -51,9 +49,9 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
                         let newHmac    = hmacProvider.GenerateHmac encCookie
                         match HmacComparer.Compare (newHmac, hmacBytes, hmacProvider.HmacLength) with
                         | true -> Some <| config.CryptographyConfiguration.EncryptionProvider.Decrypt encCookie
-                        | _    -> None
-              | _    -> None
-    | _    -> None
+                        | _ -> None
+              | _ -> None
+    | _ -> None
 
   /// Expire old sessions
   let expireOldSessions () =
@@ -69,9 +67,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   /// <param name="response">Response to save into</param>
   member this.Save (session : IPersistableSession) (response : Nancy.Response) =
     expireOldSessions ()
-    match null = session || not session.HasChanged with
-    | true -> ()
-    | _    -> store.UpdateSession session
+    match isNull session || not session.HasChanged with true -> () | _ -> store.UpdateSession session
     setCookie session response
 
   /// <summary>
@@ -84,11 +80,9 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
     match getIdFromCookie request with
     | Some id -> match store.RetrieveSession id with
                  | null -> store.CreateNewSession ()
-                 | sess -> match cfg.UseRollingSessions with
-                           | true -> store.UpdateLastAccessed sess.Id
-                           | _    -> ()
+                 | sess -> match cfg.UseRollingSessions with true -> store.UpdateLastAccessed sess.Id | _ -> ()
                            sess
-    | None    -> store.CreateNewSession ()
+    | None -> store.CreateNewSession ()
 
   /// <summary>
   /// Saves the request session into the response
@@ -105,9 +99,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   /// <param name="store">RethinkDB session store instance</param>
   /// <returns>Always returns null, as a non-null return indicates a change in the pipeline</returns>
   static member private LoadSession (ctx : NancyContext) (provider : PersistableSessions) : Nancy.Response =
-    match ctx.Request with
-    | null -> ()
-    | _    -> ctx.Request.Session <- provider.Load ctx.Request
+    match ctx.Request with null -> () | _ -> ctx.Request.Session <- provider.Load ctx.Request
     null
 
   /// <summary>
@@ -118,6 +110,6 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   static member Enable (pipelines : IPipelines, cfg) =
     match pipelines with
     | null -> nullArg "pipelines"
-    | _    -> let provider = PersistableSessions(cfg)
-              pipelines.BeforeRequest.AddItemToStartOfPipeline(fun ctx -> PersistableSessions.LoadSession ctx provider)
-              pipelines.AfterRequest.AddItemToEndOfPipeline   (fun ctx -> PersistableSessions.SaveSession ctx provider)
+    | _ -> let provider = PersistableSessions(cfg)
+           pipelines.BeforeRequest.AddItemToStartOfPipeline(fun ctx -> PersistableSessions.LoadSession ctx provider)
+           pipelines.AfterRequest.AddItemToEndOfPipeline   (fun ctx -> PersistableSessions.SaveSession ctx provider)

@@ -58,27 +58,19 @@ type BasePersistableSession(id : Guid, lastAccessed : DateTime, items : IDiction
     member this.Count with get() = this.Items.Count
     
     member this.DeleteAll () =
-      match this.Items.Count with
-      | 0 -> ()
-      | _ -> this.Changed ()
+      match this.Items.Count with 0 -> () | _ -> this.Changed ()
       this.Items.Clear ()
     
-    member this.Delete key = match this.Items.Remove key with
-                             | true -> this.Changed ()
-                             | _    -> ()
+    member this.Delete key = match this.Items.Remove key with true -> this.Changed () | _ -> ()
     
     member this.Item
       with get(index) =
-        match this.Items.ContainsKey index with
-        | true -> this.Items.[index]
-        | _    -> null
+        match this.Items.ContainsKey index with true -> this.Items.[index] | _ -> null
       and set index v =
-        match (match this.[index] with
-               | null -> obj()
-               | item -> item) with
-        | value when value.Equals(v) -> ()
-        | _                          -> this.Items.[index] <- v
-                                        this.Changed ()
+        match (match this.[index] with null -> obj() | item -> item) with
+        | value when value.Equals v -> ()
+        | _ -> this.Items.[index] <- v
+               this.Changed ()
 
     member this.HasChanged with get() = _hasChanged
 
@@ -90,14 +82,13 @@ type BasePersistableSession(id : Guid, lastAccessed : DateTime, items : IDiction
 
     member this.GetOrDefault<'T> (key, value) =
       match this.[key] with
-      | null          -> value
+      | null -> value
       | :? 'T as item -> item
-      | item          -> try JsonConvert.DeserializeObject<'T>(string item)
-                          with | _ -> value
+      | item -> try JsonConvert.DeserializeObject<'T>(string item) with _ -> value
 
     member this.Get<'T> key = this.GetOrDefault (key, Unchecked.defaultof<'T>)
 
-  // IPersistalbe members accessible without casting
+  // IPersistable members accessible without casting
 
   /// Get a strongly-typed value from the session
   abstract Get<'T> : string -> 'T

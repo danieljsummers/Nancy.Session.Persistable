@@ -6,7 +6,7 @@ open Nancy
 
 type Request with
   /// The current session as a persistable session
-  member this.PersistableSession : IPersistableSession = downcast this.Session
+  member this.PersistableSession = this.Session :?> IPersistableSession
 
 /// Get the session as a strongly-typed persistable session
 [<System.Runtime.CompilerServices.Extension>]
