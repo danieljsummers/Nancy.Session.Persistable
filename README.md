@@ -1,8 +1,9 @@
 # Nancy.Session.Persistable
 
 This is a community project that provides the majority of a session store implementation for Nancy, the lean-and-mean
-web framework that runs under the .NET framework.  It also provides extensions to the Nancy Request object that allow
-strongly-typed retrieval of objects from the session.  It uses cookies to associate the session Id with a request.
+web framework that runs under the .NET framework.  It also provides extensions to the Nancy ```Request``` object that
+allow strongly-typed retrieval of objects from the session.  It uses cookies to associate the session Id with a
+request.
 
 ## Get It ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Persistable.svg)
 This package will be installed when you install any of the available back-end storage packages. Currently available:
@@ -12,12 +13,14 @@ This package will be installed when you install any of the available back-end st
   [package](https://nuget.org/packages/Nancy.Session.MongoDB) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.MongoDB.svg)
 * InMemory | [project](https://github.com/danieljsummers/Nancy.Session.InMemory) |
   [package](https://nuget.org/packages/Nancy.Session.InMemory) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.InMemory.svg)
+* Relational / EF | [project](https://github.com/danieljsummers/Nancy.Session.Relational) |
+  package ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Relational.svg)
 
 _NOTE: v0.8.x builds are done in debug mode, and may have some console logging during use. For v0.9.x, we will switch
 to release mode, and these logs will be gone.  Also, while the API is currently thought stable, it may change up until
 a 1.0 release._
 
-_NOTE 2: Planned future implementations include Redis, Entity Framework, and ADO.NET._
+_NOTE 2: Possible future implementations include Redis and RavenDB._
 
 ## Enable It
 
