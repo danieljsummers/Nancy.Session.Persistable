@@ -1,0 +1,13 @@
+type project
+id Nancy.Session.Persistable
+version 0.9.0
+title Nancy.Session.Persistable
+description A framework for Nancy to allow persistent sessions and strongly-typed access to session values
+authors Daniel J. Summers
+owners Daniel J. Summers
+licenseUrl https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/LICENSE
+projectUrl https://github.com/danieljsummers/Nancy.Session.Persistable
+requireLicenseAcceptance false
+copyright Copyright 2016
+tags Nancy Session
+releaseNotes Package is stable enough to move to Release configuration

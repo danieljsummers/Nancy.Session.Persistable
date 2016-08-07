@@ -57,8 +57,8 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   let expireOldSessions () =
     match cfg.ExpiryCheckFrequency >= DateTime.Now - lastExpiryCheck with
     | true -> ()
-    | _    -> store.ExpireSessions ()
-              lastExpiryCheck <- DateTime.Now
+    | _ -> store.ExpireSessions ()
+           lastExpiryCheck <- DateTime.Now
 
   /// <summary>
   /// Save the session into the response
@@ -82,7 +82,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
                  | null -> store.CreateNewSession ()
                  | sess -> match cfg.UseRollingSessions with true -> store.UpdateLastAccessed sess.Id | _ -> ()
                            sess
-    | None -> store.CreateNewSession ()
+    | _ -> store.CreateNewSession ()
 
   /// <summary>
   /// Saves the request session into the response

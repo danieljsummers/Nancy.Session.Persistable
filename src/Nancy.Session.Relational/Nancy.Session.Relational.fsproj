@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>a12dc91b-d162-452c-80be-b32e6cbff600</ProjectGuid>
+    <ProjectGuid>8cc3b571-8ed2-4b4f-ac5b-2cd4f91ee918</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Nancy.Session.Persistable</RootNamespace>
-    <AssemblyName>Nancy.Session.Persistable</AssemblyName>
+    <RootNamespace>Nancy.Session.Relational</RootNamespace>
+    <AssemblyName>Nancy.Session.Relational</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>Nancy.Session.Persistable</Name>
+    <Name>Nancy.Session.Relational</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +22,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Nancy.Session.Persistable.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Nancy.Session.Relational.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,7 +31,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Nancy.Session.Persistable.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Nancy.Session.Relational.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -51,10 +51,15 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="PersistableSession.fs" />
-    <Compile Include="PersistableSessionConfiguration.fs" />
-    <Compile Include="RequestExtensions.fs" />
-    <Compile Include="PersistableSessions.fs" />
+    <Compile Include="Dialect.fs" />
+    <Compile Include="SqlUtils.fs" />
+    <Compile Include="RelationalSessions.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj">
+      <Project>{a12dc91b-d162-452c-80be-b32e6cbff600}</Project>
+      <Name>Nancy.Session.Persistable</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -63,6 +68,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

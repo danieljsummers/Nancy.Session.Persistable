@@ -1,0 +1,7 @@
+framework: net40, net45, net452
+source https://nuget.org/api/v2
+nuget FAKE
+nuget MongoDB.Driver
+nuget Nancy
+nuget Newtonsoft.Json
+nuget RethinkDb.Driver

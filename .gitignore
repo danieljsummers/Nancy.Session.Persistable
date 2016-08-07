@@ -239,7 +239,7 @@ GeneratedArtifacts/
 ModelManifest.xml
 
 # Paket dependency manager
-.paket/paket.exe
+**/.paket/paket.exe
 
 # FAKE - F# Make
 .fake/
