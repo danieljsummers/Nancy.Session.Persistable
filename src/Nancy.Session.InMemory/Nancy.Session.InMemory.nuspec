@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Nancy.Session.InMemory</id>
+    <version>0.9.1-pre</version>
+    <authors>Daniel J. Summers</authors>
+    <owners>Daniel J. Summers</owners>
+    <licenseUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</projectUrl>
+    <iconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/in-memory.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An in-memory session store for Nancy (utilizing Nancy.Session.Persistable)</description>
+    <releaseNotes>Added support for Nancy 2.0 / .NET Core (pre-release due to dependency on pre-release Nancy 2.0 package)</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Nancy Session</tags>
+    <dependencies>
+      <group>
+        <dependency id="Nancy.Session.Persistable" version="0.9.1-pre" />
+        <dependency id="Newtonsoft.Json" version="9.0.1" />
+      </group>
+      <group targetFramework="net452">
+        <dependency id="Nancy" version="1.4.3" />
+      </group>
+      <group targetFramework="netstandard1.6">
+        <dependency id="Nancy" version="2.0.0-barneyrubble" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net452\Nancy.Session.InMemory.dll" target="lib\net452" />
+    <file src="bin\Release\netstandard1.6\Nancy.Session.InMemory.dll" target="lib\netstandard1.6" />
+  </files>
+</package>

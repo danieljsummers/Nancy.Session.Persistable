@@ -3,12 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Nancy.Session.Persistable", "Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj", "{A12DC91B-D162-452C-80BE-B32E6CBFF600}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E13B0139-E9C0-4886-BFD9-7FC2BDF90BB5}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
 	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nancy.Session.Persistable", "Nancy.Session.Persistable\Nancy.Session.Persistable.xproj", "{3BCB3CB0-DF7A-4553-BD44-5CA7A835D7A8}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nancy.Session.InMemory", "Nancy.Session.InMemory\Nancy.Session.InMemory.xproj", "{9D657FF0-1D25-4A39-8285-EDC041CF3FF9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nancy.Session.MongoDB", "Nancy.Session.MongoDB\Nancy.Session.MongoDB.xproj", "{AED6FADE-388F-495A-A5DB-48FF9CF05596}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nancy.Session.RethinkDB", "Nancy.Session.RethinkDB\Nancy.Session.RethinkDB.xproj", "{A41D09F2-5F72-4EEA-9763-336E03E867EF}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nancy.Session.Relational", "Nancy.Session.Relational\Nancy.Session.Relational.xproj", "{BB956763-1D16-44E1-B379-B0D4E7EEF012}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,10 +24,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A12DC91B-D162-452C-80BE-B32E6CBFF600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A12DC91B-D162-452C-80BE-B32E6CBFF600}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A12DC91B-D162-452C-80BE-B32E6CBFF600}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A12DC91B-D162-452C-80BE-B32E6CBFF600}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BCB3CB0-DF7A-4553-BD44-5CA7A835D7A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BCB3CB0-DF7A-4553-BD44-5CA7A835D7A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BCB3CB0-DF7A-4553-BD44-5CA7A835D7A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BCB3CB0-DF7A-4553-BD44-5CA7A835D7A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D657FF0-1D25-4A39-8285-EDC041CF3FF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D657FF0-1D25-4A39-8285-EDC041CF3FF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D657FF0-1D25-4A39-8285-EDC041CF3FF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D657FF0-1D25-4A39-8285-EDC041CF3FF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AED6FADE-388F-495A-A5DB-48FF9CF05596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AED6FADE-388F-495A-A5DB-48FF9CF05596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AED6FADE-388F-495A-A5DB-48FF9CF05596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AED6FADE-388F-495A-A5DB-48FF9CF05596}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A41D09F2-5F72-4EEA-9763-336E03E867EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A41D09F2-5F72-4EEA-9763-336E03E867EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A41D09F2-5F72-4EEA-9763-336E03E867EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A41D09F2-5F72-4EEA-9763-336E03E867EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB956763-1D16-44E1-B379-B0D4E7EEF012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB956763-1D16-44E1-B379-B0D4E7EEF012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB956763-1D16-44E1-B379-B0D4E7EEF012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB956763-1D16-44E1-B379-B0D4E7EEF012}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

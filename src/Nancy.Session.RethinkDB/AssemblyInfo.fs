@@ -14,7 +14,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyCulture("")>]
 [<assembly: ComVisible(false)>]
 [<assembly: Guid("4c2c85dd-534e-4576-8a30-c845d192a0ee")>]
-[<assembly: AssemblyVersion("0.9.0.0")>]
+[<assembly: AssemblyVersion("0.9.1.0")>]
 [<assembly: AssemblyFileVersion("1.0.0.0")>]
 
 do

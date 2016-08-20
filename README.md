@@ -17,6 +17,8 @@ packages. Currently available:
 * Relational / EF _(in development)_ | wiki |
   package ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Relational.svg)
 
+**Use pre-release packages (v 0.9.1) for Nancy 2.0 / .NET Core support**
+
 _NOTE: v0.8.x builds are done in debug mode, and may have some console logging during use. For v0.9.x, we will switch
 to release mode, and these logs will be gone.  Also, while the API is currently thought stable, it may change up until
 a 1.0 release._
