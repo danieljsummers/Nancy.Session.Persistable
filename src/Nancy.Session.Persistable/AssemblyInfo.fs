@@ -9,13 +9,13 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("Daniel J. Summers")>]
 [<assembly: AssemblyProduct("Nancy.Session.Persistable")>]
-[<assembly: AssemblyCopyright("Copyright ©  2016")>]
+[<assembly: AssemblyCopyright("MIT License")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 [<assembly: ComVisible(false)>]
 [<assembly: Guid("a12dc91b-d162-452c-80be-b32e6cbff600")>]
-[<assembly: AssemblyVersion("0.9.1.0")>]
-[<assembly: AssemblyFileVersion("1.0.0.0")>]
+[<assembly: AssemblyVersion("0.9.2.0")>]
+[<assembly: AssemblyFileVersion("0.9.2.0")>]
 
 do
   ()

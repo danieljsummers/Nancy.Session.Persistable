@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Nancy.Session.Persistable</id>
-    <version>0.9.1-pre</version>
+    <version>0.9.2-pre</version>
     <authors>Daniel J. Summers</authors>
     <owners>Daniel J. Summers</owners>
     <licenseUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/LICENSE</licenseUrl>
@@ -10,18 +10,18 @@
     <iconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/persistable.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</description>
-    <releaseNotes>Added support for Nancy 2.0 / .NET Core (pre-release due to dependency on pre-release Nancy 2.0 package)</releaseNotes>
-    <copyright>Copyright 2016</copyright>
+    <releaseNotes>Dependency bump (pre-release due to dependency on pre-release Nancy 2.0 package)</releaseNotes>
+    <copyright>MIT License</copyright>
     <tags>Nancy Session</tags>
     <dependencies>
       <group>
-        <dependency id="Newtonsoft.Json" version="9.0.1" />
+        <dependency id="Newtonsoft.Json" version="10.0.3" />
       </group>
       <group targetFramework="net452">
         <dependency id="Nancy" version="1.4.3" />
       </group>
       <group targetFramework="netstandard1.6">
-        <dependency id="Nancy" version="2.0.0-barneyrubble" />
+        <dependency id="Nancy" version="2.0.0-clinteastwood" />
       </group>
     </dependencies>
   </metadata>

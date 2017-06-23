@@ -1,0 +1,35 @@
+﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6;net452</TargetFramework>
+    <AssemblyName>Nancy.Session.Persistable</AssemblyName>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Nancy.Session.Persistable</PackageId>
+    <Authors>Daniel J. Summers</Authors>
+    <Description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</Description>
+    <VersionPrefix>0.9.2</VersionPrefix>
+    <VersionSuffix>pre</VersionSuffix>
+    <PackageLicenseUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/persistable.png</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Dependency bump (pre-release due to dependency on pre-release Nancy 2.0 package)</PackageReleaseNotes>
+    <Copyright>MIT License</Copyright>
+    <PackageTags>Nancy Session</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="PersistableSession.fs" />
+    <Compile Include="PersistableSessionConfiguration.fs" />
+    <Compile Include="RequestExtensions.fs" />
+    <Compile Include="PersistableSessions.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.1.*" />
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
+    <PackageReference Include="Nancy" Version="1.4.3" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="Nancy" Version="2.0.0-clinteastwood" Condition="'$(TargetFramework)' == 'netstandard1.6'" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+</Project>
