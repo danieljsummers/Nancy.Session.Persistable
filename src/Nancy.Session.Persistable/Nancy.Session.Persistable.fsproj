@@ -1,6 +1,6 @@
 ﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6;net452</TargetFramework>
+    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
     <AssemblyName>Nancy.Session.Persistable</AssemblyName>
     <OutputType>Library</OutputType>
   </PropertyGroup>
