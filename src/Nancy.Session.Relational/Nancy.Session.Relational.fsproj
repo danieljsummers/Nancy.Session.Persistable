@@ -12,15 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Data" Version="4.0.0.0" />
-    <PackageReference Include="FSharp.Core" Version="4.1.*" />
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
-    <PackageReference Include="Nancy" Version="1.4.3" Condition="'$(TargetFramework)' == 'net452'" />
-    <PackageReference Include="Nancy" Version="2.0.0-clinteastwood" Condition="'$(TargetFramework)' == 'netstandard1.6'" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-  </ItemGroup>
+    <Reference Include="System.Data" Version="4.0.0.0" Condition="'$(TargetFramework)' == 'net452'" />
 
-  <ItemGroup>
     <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj" />
   </ItemGroup>
 
