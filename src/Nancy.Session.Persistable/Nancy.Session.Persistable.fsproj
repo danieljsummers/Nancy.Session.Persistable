@@ -5,17 +5,7 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <PropertyGroup>
-    <Authors>Daniel J. Summers</Authors>
     <Description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</Description>
-    <VersionPrefix>0.9.2</VersionPrefix>
-    <VersionSuffix>pre</VersionSuffix>
-    <PackageLicenseUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/persistable.png</PackageIconUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Dependency bump (pre-release due to dependency on pre-release Nancy 2.0 package)</PackageReleaseNotes>
-    <Copyright>MIT License</Copyright>
-    <PackageTags>Nancy Session</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
