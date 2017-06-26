@@ -5,7 +5,6 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageId>Nancy.Session.Persistable</PackageId>
     <Authors>Daniel J. Summers</Authors>
     <Description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</Description>
     <VersionPrefix>0.9.2</VersionPrefix>
