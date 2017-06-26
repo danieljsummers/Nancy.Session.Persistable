@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.6</TargetFrameworks>
+
+    <Description>An in-memory session store for Nancy (utilizing Nancy.Session.Persistable)</Description>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,10 +1,6 @@
 ﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
-    <AssemblyName>Nancy.Session.Persistable</AssemblyName>
-    <OutputType>Library</OutputType>
-  </PropertyGroup>
-  <PropertyGroup>
     <Description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</Description>
   </PropertyGroup>
   <ItemGroup>

@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.6</TargetFrameworks>
+
+    <Description>A RethinkDB-backed session provider for Nancy (utilizing the Nancy.Session.Persistable API)</Description>
+    <PackageTags>$(PackageTags) RethinkDB</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
