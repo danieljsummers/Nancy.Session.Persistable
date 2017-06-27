@@ -80,7 +80,18 @@ let await' (task : System.Threading.Tasks.Task) =
 
 /// Get an open connection to the data store
 let createConn dialect connStr =
-  let c = DbProviderFactories.GetFactory((forDialect dialect).ProviderFactory).CreateConnection()
+  let c =
+#if NET452
+    DbProviderFactories.GetFactory((forDialect dialect).ProviderFactory).CreateConnection()
+#else
+#if NETSTANDARD1_6
+    match dialect with
+    | Dialect.SqlServer -> new System.Data.SqlClient.SqlConnection()
+    | d -> failwithf "Dialect %A not supported" d
+#else
+    failwithf "Framework not supported"
+#endif
+#endif
   c.ConnectionString <- connStr
   c.OpenAsync () |> await'
   c

@@ -1,0 +1,21 @@
+﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Dialect.fs" />
+    <Compile Include="SqlUtils.fs" />
+    <Compile Include="RelationalSessions.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Data" Version="4.0.0.0" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.3.1" Condition="'$(TargetFramework)' == 'netstandard1.6'" />
+
+    <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj" />
+  </ItemGroup>
+
+</Project>

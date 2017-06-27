@@ -1,0 +1,21 @@
+﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net452;netstandard1.6</TargetFrameworks>
+
+    <Description>A RethinkDB-backed session provider for Nancy (utilizing the Nancy.Session.Persistable API)</Description>
+    <PackageTags>$(PackageTags) RethinkDB</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="RethinkDBSessions.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RethinkDb.Driver" Version="2.3.12" />
+
+    <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj" />
+  </ItemGroup>
+
+</Project>
