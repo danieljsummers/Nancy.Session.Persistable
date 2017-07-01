@@ -8,26 +8,45 @@ request.
 ## Get It ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Persistable.svg) ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.Persistable.svg)
 The ```Nancy.Session.Persistable``` pacakge will be installed when you install any of the available back-end storage
 packages. Currently available:
-* RethinkDB | [wiki](https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/RethinkDB-Provider) | 
-  [package](https://nuget.org/packages/Nancy.Session.RethinkDB)
-  ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.RethinkDB.svg)
-  ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.RethinkDB.svg)
-* MongoDB | [wiki](https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/MongoDB-Provider) | 
-  [package](https://nuget.org/packages/Nancy.Session.MongoDB)
-  ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.MongoDB.svg)
-  ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.MongoDB.svg)
-* InMemory | [wiki](https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/InMemory-Provider) |
-  [package](https://nuget.org/packages/Nancy.Session.InMemory)
-  ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.InMemory.svg)
-  ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.InMemory.svg)
-* Relational / EF _(in development)_ | wiki |
-  package ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Relational.svg)
+<table>
+  <tr>
+  <th>Data Store</th>
+  <th>Docs</th>
+  <th>Package</th>
+  <th>Stable<br>(Nancy 1.4.3,<br>.NET Framework)</th>
+  <th>Pre-release<br>(Nancy 1.4.3/2.0,<br>.NET Framework/Core)</th>
+  </tr>
+  <tr>
+  <td><strong>RethinkDB</strong></td>
+  <td><a href="https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/RethinkDB-Provider">Wiki</a></td>
+  <td><a href="https://nuget.org/packages/Nancy.Session.RethinkDB">NuGet</a></td>
+  <td><img alt="NuGet Version" src="https://img.shields.io/nuget/v/Nancy.Session.RethinkDB.svg"></td>
+  <td><img alt="NuGet Version" src="https://img.shields.io/nuget/vpre/Nancy.Session.RethinkDB.svg"></td>
+  </tr>
+  <tr>
+  <td><strong>MongoDB</strong></td>
+  <td><a href="https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/MongoDB-Provider">Wiki</a></td>
+  <td><a href="https://nuget.org/packages/Nancy.Session.MongoDB">NuGet</a></td>
+  <td><img alt="NuGet Version" src="https://img.shields.io/nuget/v/Nancy.Session.MongoDB.svg"></td>
+  <td><img alt="NuGet Version" src="https://img.shields.io/nuget/vpre/Nancy.Session.MongoDB.svg"></td>
+  </tr>
+  <tr>
+  <td><strong>In Memory</strong></td>
+  <td><a href="https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/InMemory-Provider">Wiki</a></td>
+  <td><a href="https://nuget.org/packages/Nancy.Session.InMemory">NuGet</a></td>
+  <td><img alt="NuGet Version" src="https://img.shields.io/nuget/v/Nancy.Session.InMemory.svg"></td>
+  <td><img alt="NuGet Version" src="https://img.shields.io/nuget/vpre/Nancy.Session.InMemory.svg"></td>
+  </tr>
+  <tr>
+  <td><strong>Relational / EF</strong><br><em>(in development)</em></td>
+  <td>--</td>
+  <td>--</td>
+  <td>--</td>
+  <td><img alt="NuGet Version" src="https://img.shields.io/nuget/v/Nancy.Session.Relational.svg"></td>
+  </tr>
+</table>
 
-**Use pre-release packages (v 0.9.x) for Nancy 2.0 / .NET Core support**
-
-_NOTE: v0.8.x builds were done in debug mode, and may have some console logging during use. For v0.9.x, we switched to
-release mode, and these logs are now gone.  Also, while the API is currently thought stable, it may change up until a
-1.0 release._
+_NOTE: While the API is currently thought stable, it may change up until a 1.0 release._
 
 _NOTE 2: Possible future implementations include Redis, RavenDB, and disk storage._
 
