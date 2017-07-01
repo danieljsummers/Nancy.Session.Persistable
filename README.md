@@ -5,23 +5,29 @@ framework that runs under the .NET framework.  It also provides extensions to th
 allow strongly-typed retrieval of objects from the session.  It uses cookies to associate the session Id with a
 request.
 
-## Get It ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Persistable.svg)
+## Get It ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Persistable.svg) ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.Persistable.svg)
 The ```Nancy.Session.Persistable``` pacakge will be installed when you install any of the available back-end storage
 packages. Currently available:
 * RethinkDB | [wiki](https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/RethinkDB-Provider) | 
-  [package](https://nuget.org/packages/Nancy.Session.RethinkDB) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.RethinkDB.svg)
+  [package](https://nuget.org/packages/Nancy.Session.RethinkDB)
+  ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.RethinkDB.svg)
+  ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.RethinkDB.svg)
 * MongoDB | [wiki](https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/MongoDB-Provider) | 
-  [package](https://nuget.org/packages/Nancy.Session.MongoDB) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.MongoDB.svg)
+  [package](https://nuget.org/packages/Nancy.Session.MongoDB)
+  ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.MongoDB.svg)
+  ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.MongoDB.svg)
 * InMemory | [wiki](https://github.com/danieljsummers/Nancy.Session.Persistable/wiki/InMemory-Provider) |
-  [package](https://nuget.org/packages/Nancy.Session.InMemory) ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.InMemory.svg)
+  [package](https://nuget.org/packages/Nancy.Session.InMemory)
+  ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.InMemory.svg)
+  ![NuGet Version](https://img.shields.io/nuget/vpre/Nancy.Session.InMemory.svg)
 * Relational / EF _(in development)_ | wiki |
   package ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Relational.svg)
 
-**Use pre-release packages (v 0.9.1) for Nancy 2.0 / .NET Core support**
+**Use pre-release packages (v 0.9.x) for Nancy 2.0 / .NET Core support**
 
-_NOTE: v0.8.x builds are done in debug mode, and may have some console logging during use. For v0.9.x, we will switch
-to release mode, and these logs will be gone.  Also, while the API is currently thought stable, it may change up until
-a 1.0 release._
+_NOTE: v0.8.x builds were done in debug mode, and may have some console logging during use. For v0.9.x, we switched to
+release mode, and these logs are now gone.  Also, while the API is currently thought stable, it may change up until a
+1.0 release._
 
 _NOTE 2: Possible future implementations include Redis, RavenDB, and disk storage._
 
