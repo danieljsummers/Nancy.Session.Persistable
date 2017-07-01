@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.6</TargetFrameworks>
-
     <Description>A RethinkDB-backed session provider for Nancy (utilizing the Nancy.Session.Persistable API)</Description>
+    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/rethinkdb.png</PackageIconUrl>
     <PackageTags>$(PackageTags) RethinkDB</PackageTags>
   </PropertyGroup>
 
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RethinkDb.Driver" Version="2.3.12" />
+    <PackageReference Include="RethinkDb.Driver" Version="2.*" />
 
     <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj" />
   </ItemGroup>

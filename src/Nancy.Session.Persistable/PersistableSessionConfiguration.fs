@@ -51,7 +51,7 @@ and [<AllowNullLiteral>] IPersistableSessionConfiguration =
 /// Base configuration options for persistable sessions
 [<AbstractClass>]
 [<AllowNullLiteral>]
-type BasePersistableSessionConfiguration(cryptoConfig : CryptographyConfiguration) as this =
+type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfiguration) as this =
 
   do
     this.SetSerializer ()
@@ -59,32 +59,32 @@ type BasePersistableSessionConfiguration(cryptoConfig : CryptographyConfiguratio
   abstract Store : IPersistableSessionStore with get
 
   member this.CookieConfiguration = 
-    let cfg = CookieBasedSessionsConfiguration(cryptoConfig)
-    cfg.Serializer <- DefaultObjectSerializer()
+    let cfg = CookieBasedSessionsConfiguration cryptoConfig
+    cfg.Serializer <- DefaultObjectSerializer ()
     cfg
   
   /// Gets or sets whether to use rolling sessions (expiry based on inactivity) or not (expiry based on creation)
   abstract UseRollingSessions : bool with get, set
-  default this.UseRollingSessions with get() = true and set v = this.UseRollingSessions <- v
+  default this.UseRollingSessions with get () = true and set v = this.UseRollingSessions <- v
 
   /// Gets or sets the session expiry period
   abstract Expiry : TimeSpan with get, set
-  default this.Expiry with get() = TimeSpan(2, 0, 0) and set v = this.Expiry <- v
+  default this.Expiry with get () = TimeSpan (2, 0, 0) and set v = this.Expiry <- v
 
   /// Gets or sets the frequency with which expired sessions are removed from storage
   abstract ExpiryCheckFrequency : TimeSpan with get, set
-  default this.ExpiryCheckFrequency with get() = TimeSpan(0, 1, 0) and set v = this.ExpiryCheckFrequency <- v
+  default this.ExpiryCheckFrequency with get () = TimeSpan (0, 1, 0) and set v = this.ExpiryCheckFrequency <- v
 
   /// Get the validity state of the session
   abstract IsValid : bool with get
-  default this.IsValid with get() = this.CookieConfiguration.IsValid
+  default this.IsValid with get () = this.CookieConfiguration.IsValid
 
-  member private this.SetSerializer () = this.CookieConfiguration.Serializer <- DefaultObjectSerializer()
+  member private this.SetSerializer () = this.CookieConfiguration.Serializer <- DefaultObjectSerializer ()
 
   interface IPersistableSessionConfiguration with
-    member this.Store                with get() = this.Store
-    member this.CookieConfiguration  with get() = this.CookieConfiguration
-    member this.UseRollingSessions   with get() = this.UseRollingSessions   and set v = this.UseRollingSessions <- v
-    member this.Expiry               with get() = this.Expiry               and set v = this.Expiry <- v
-    member this.ExpiryCheckFrequency with get() = this.ExpiryCheckFrequency and set v = this.ExpiryCheckFrequency <- v
-    member this.IsValid              with get() = this.IsValid
+    member this.Store                with get () = this.Store
+    member this.CookieConfiguration  with get () = this.CookieConfiguration
+    member this.UseRollingSessions   with get () = this.UseRollingSessions   and set v = this.UseRollingSessions <- v
+    member this.Expiry               with get () = this.Expiry               and set v = this.Expiry <- v
+    member this.ExpiryCheckFrequency with get () = this.ExpiryCheckFrequency and set v = this.ExpiryCheckFrequency <- v
+    member this.IsValid              with get () = this.IsValid

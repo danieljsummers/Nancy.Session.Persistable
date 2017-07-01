@@ -67,26 +67,28 @@ let private forDialect dialect =
       |> List.filter (fun s -> s.Dialect = dialect)
       |> List.exactlyOne
   with _ -> invalidArg "RelationalSessionConfiguration.Dialect" "Invalid SQL dialect configured"
-  
+ 
+let internal withDialect dialect (f : SqlCommands -> 'a) = forDialect dialect |> f
+
 open System
 open System.Data.Common
 
 /// Await a task, returning its result
-let await task = task |> Async.AwaitTask |> Async.RunSynchronously
+let await task = task |> (Async.AwaitTask >> Async.RunSynchronously)
 
 /// Await a void task
 let await' (task : System.Threading.Tasks.Task) =
-  task |> Async.AwaitIAsyncResult |> Async.Ignore |> Async.RunSynchronously
+  task |> (Async.AwaitIAsyncResult >> Async.Ignore >> Async.RunSynchronously)
 
 /// Get an open connection to the data store
-let createConn dialect connStr =
+let createConn connStr cmds =
   let c =
 #if NET452
-    DbProviderFactories.GetFactory((forDialect dialect).ProviderFactory).CreateConnection()
+    DbProviderFactories.GetFactory((forDialect cmds.Dialect).ProviderFactory).CreateConnection ()
 #else
 #if NETSTANDARD1_6
-    match dialect with
-    | Dialect.SqlServer -> new System.Data.SqlClient.SqlConnection()
+    match cmds.Dialect with
+    | Dialect.SqlServer -> new System.Data.SqlClient.SqlConnection ()
     | d -> failwithf "Dialect %A not supported" d
 #else
     failwithf "Framework not supported"
@@ -109,39 +111,42 @@ let addParam (stmt : DbCommand) value =
   stmt.Parameters.Add p |> ignore
 
 /// Run a command, ignoring the results
-let runCmd (cmd : DbCommand) = cmd.ExecuteNonQueryAsync () |> await |> ignore
+let runCmd (cmd : DbCommand) = cmd.ExecuteNonQueryAsync () |> (await >> ignore)
 
 /// Obtain the default schema (used to check for table existence)
 let defaultSchema (conn : DbConnection) schema defaultSql =
   match String.IsNullOrEmpty schema with
-  | true -> let cmd = conn.CreateCommand ()
-            cmd.CommandText <- defaultSql
-            cmd.ExecuteScalarAsync () |> await |> Convert.ToString
+  | true ->
+      use cmd = conn.CreateCommand ()
+      cmd.CommandText <- defaultSql
+      cmd.ExecuteScalarAsync ()
+      |> (await >> string)
   | _ -> schema
 
 /// Determine if the configured session table exists
-let tableExists (conn : DbConnection) dialect schema table =
-  let sql = forDialect dialect
-  let cmd = conn.CreateCommand ()
-  cmd.CommandText <- match dialect with
-                     | Dialect.SQLite -> // Schema = attached database; must change table, not pass parameter
-                                         match String.IsNullOrEmpty schema with
-                                         | true -> sql.TableExistence
-                                         | _ -> sql.TableExistence.Replace("FROM ", sprintf "FROM %s." schema) 
-                     | _ -> sql.TableExistence
-  match sql.DefaultSchema with Some s -> addParam cmd (defaultSchema conn schema s) | None -> ()
+let tableExists (conn : DbConnection) schema table cmds =
+  use cmd = conn.CreateCommand ()
+  cmd.CommandText <-
+    match cmds.Dialect with
+    | Dialect.SQLite ->
+        // Schema = attached database; must change table, not pass parameter
+        match String.IsNullOrEmpty schema with
+        | true -> cmds.TableExistence
+        | _ -> cmds.TableExistence.Replace ("FROM ", sprintf "FROM %s." schema) 
+    | _ -> cmds.TableExistence
+  match cmds.DefaultSchema with Some s -> addParam cmd (defaultSchema conn schema s) | None -> ()
   addParam cmd table
-  1 = (cmd.ExecuteScalarAsync () |> await |> Convert.ToInt32)
+  1 = (cmd.ExecuteScalarAsync () |> (await >> Convert.ToInt32))
 
 /// Create a qualified table name if the schema is present, and an unqualified one if it is not
 let qualifiedTable schema table =
   match System.String.IsNullOrEmpty schema with true -> table | _ -> sprintf "%s.%s" schema table
 
-let establishDataStore dialect connectionString schema table =
-  let sql = forDialect dialect
-  let conn = createConn dialect connectionString
-  match tableExists conn dialect schema table with
+let establishDataStore connectionString schema table cmds =
+  use conn = createConn connectionString cmds
+  match tableExists conn schema table cmds with
   | true -> ()
-  | _ -> let cmd = conn.CreateCommand ()
-         cmd.CommandText <- sql.CreateTable.Replace("%%", qualifiedTable schema table)
-         runCmd cmd
+  | _ ->
+      use cmd = conn.CreateCommand ()
+      cmd.CommandText <- cmds.CreateTable.Replace ("%%", qualifiedTable schema table)
+      runCmd cmd

@@ -29,20 +29,20 @@ type IPersistableSession =
 
 
 /// A base class for persistable sessions
-type BasePersistableSession(id : Guid, lastAccessed : DateTime, items : IDictionary<string, obj>) =
+type BasePersistableSession (id : Guid, lastAccessed : DateTime, items : IDictionary<string, obj>) =
   
   let mutable _hasChanged = false
 
-  new() = BasePersistableSession(Guid.NewGuid(), DateTime.Now, Dictionary<string, obj>())
+  new () = BasePersistableSession (Guid.NewGuid(), DateTime.Now, Dictionary<string, obj> ())
 
   /// The Id of the session
-  member this.Id with get() = id
+  member this.Id with get () = id
 
   /// Get or set the last access time
-  member this.LastAccessed with get() = lastAccessed
+  member this.LastAccessed with get () = lastAccessed
 
   /// The data items in this session
-  member this.Items with get() = items
+  member this.Items with get () = items
 
   /// Indicate that the data in the session has changed
   member this.Changed () = _hasChanged <- true
@@ -55,7 +55,7 @@ type BasePersistableSession(id : Guid, lastAccessed : DateTime, items : IDiction
 
   interface ISession with
     
-    member this.Count with get() = this.Items.Count
+    member this.Count with get () = this.Items.Count
     
     member this.DeleteAll () =
       match this.Items.Count with 0 -> () | _ -> this.Changed ()
@@ -64,21 +64,22 @@ type BasePersistableSession(id : Guid, lastAccessed : DateTime, items : IDiction
     member this.Delete key = match this.Items.Remove key with true -> this.Changed () | _ -> ()
     
     member this.Item
-      with get(index) =
+      with get (index) =
         match this.Items.ContainsKey index with true -> this.Items.[index] | _ -> null
       and set index v =
         match (match this.[index] with null -> obj() | item -> item) with
         | value when value.Equals v -> ()
-        | _ -> this.Items.[index] <- v
-               this.Changed ()
+        | _ ->
+            this.Items.[index] <- v
+            this.Changed ()
 
-    member this.HasChanged with get() = _hasChanged
+    member this.HasChanged with get () = _hasChanged
 
   interface IPersistableSession with
     
-    member this.Id with get() = this.Id
-    member this.LastAccessed with get() = this.LastAccessed
-    member this.Items with get() = this.Items
+    member this.Id with get () = this.Id
+    member this.LastAccessed with get () = this.LastAccessed
+    member this.Items with get () = this.Items
 
     member this.GetOrDefault<'T> (key, value) =
       match this.[key] with
@@ -111,13 +112,13 @@ type BasePersistableSession(id : Guid, lastAccessed : DateTime, items : IDiction
   /// Get or set an object from the session (see Get<'T> for strongly-typed item retrieval)
   abstract Item : string -> obj with get, set
   default this.Item
-    with get(index) = (this :> ISession).[index]
-    and set index v = (this :> ISession).[index] <- v
+    with get (index) = (this :> ISession).[index]
+    and set index v  = (this :> ISession).[index] <- v
 
   /// The count of items in the session
   abstract Count : int with get
-  default this.Count with get() = (this :> ISession).Count
+  default this.Count with get () = (this :> ISession).Count
   
   /// Whether the session has changed since it has been loaded
   abstract HasChanged : bool with get
-  default this.HasChanged with get() = (this :> ISession).HasChanged
+  default this.HasChanged with get () = (this :> ISession).HasChanged

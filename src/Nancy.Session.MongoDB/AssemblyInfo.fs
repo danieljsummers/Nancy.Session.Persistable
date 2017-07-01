@@ -9,13 +9,13 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("Daniel J. Summers")>]
 [<assembly: AssemblyProduct("Nancy.Session.MongoDB")>]
-[<assembly: AssemblyCopyright("Copyright ©  2016")>]
+[<assembly: AssemblyCopyright("MIT License")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 [<assembly: ComVisible(false)>]
 [<assembly: Guid("2d7ea62d-d91e-4b84-a678-aa20d01e8dec")>]
-[<assembly: AssemblyVersion("0.9.1.0")>]
-[<assembly: AssemblyFileVersion("1.0.0.0")>]
+[<assembly: AssemblyVersion("0.9.2.0")>]
+[<assembly: AssemblyFileVersion("0.9.2.0")>]
 
 do
   ()

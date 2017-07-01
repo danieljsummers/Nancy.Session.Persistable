@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.6</TargetFrameworks>
-
+    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/mongodb.png</PackageIconUrl>
     <Description>A MongoDB-backed session provider for Nancy (utilizing the Nancy.Session.Persistable API)</Description>
     <PackageTags>$(PackageTags) MongoDB</PackageTags>
   </PropertyGroup>
@@ -13,9 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.2.4" Condition="'$(TargetFramework)' == 'net452'" />
-    <PackageReference Include="MongoDB.Driver" Version="2.3.0-beta1" Condition="'$(TargetFramework)' == 'netstandard1.6'" />
-
+    <PackageReference Include="MongoDB.Driver" Version="2.*" />
     <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj" />
   </ItemGroup>
 

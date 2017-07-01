@@ -27,11 +27,11 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
     let config     = cfg.CookieConfiguration
     let encData    = config.CryptographyConfiguration.EncryptionProvider.Encrypt (string session.Id)
     let hmacBytes  = config.CryptographyConfiguration.HmacProvider.GenerateHmac encData
-    let cookieData = HttpUtility.UrlEncode(sprintf "%s%s" (Convert.ToBase64String hmacBytes) encData)
-    let cookie     = NancyCookie(config.CookieName, cookieData, true)
+    let cookieData = HttpUtility.UrlEncode (sprintf "%s%s" (Convert.ToBase64String hmacBytes) encData)
+    let cookie     = NancyCookie (config.CookieName, cookieData, true)
     cookie.Domain  <- config.Domain
     cookie.Path    <- config.Path
-    cookie.Expires <- Nullable(session.LastAccessed + cfg.Expiry)
+    cookie.Expires <- Nullable <| session.LastAccessed + cfg.Expiry
     response.WithCookie cookie
     |> ignore
 
@@ -39,26 +39,29 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   let getIdFromCookie (request : Request) =
     let config = cfg.CookieConfiguration
     match request.Cookies.ContainsKey config.CookieName with
-    | true -> let hmacProvider = config.CryptographyConfiguration.HmacProvider
-              let cookieData   = HttpUtility.UrlDecode request.Cookies.[config.CookieName]
-              let hmacLength   = Base64Helpers.GetBase64Length hmacProvider.HmacLength
-              match cookieData.Length >= hmacLength with
-              | true -> let hmacString = cookieData.Substring (0, hmacLength)
-                        let encCookie  = cookieData.Substring hmacLength
-                        let hmacBytes  = Convert.FromBase64String hmacString
-                        let newHmac    = hmacProvider.GenerateHmac encCookie
-                        match HmacComparer.Compare (newHmac, hmacBytes, hmacProvider.HmacLength) with
-                        | true -> Some <| config.CryptographyConfiguration.EncryptionProvider.Decrypt encCookie
-                        | _ -> None
-              | _ -> None
+    | true ->
+        let hmacProvider = config.CryptographyConfiguration.HmacProvider
+        let cookieData   = HttpUtility.UrlDecode request.Cookies.[config.CookieName]
+        let hmacLength   = Base64Helpers.GetBase64Length hmacProvider.HmacLength
+        match cookieData.Length >= hmacLength with
+        | true ->
+            let hmacString = cookieData.Substring (0, hmacLength)
+            let encCookie  = cookieData.Substring hmacLength
+            let hmacBytes  = Convert.FromBase64String hmacString
+            let newHmac    = hmacProvider.GenerateHmac encCookie
+            match HmacComparer.Compare (newHmac, hmacBytes, hmacProvider.HmacLength) with
+            | true -> Some <| config.CryptographyConfiguration.EncryptionProvider.Decrypt encCookie
+            | _ -> None
+        | _ -> None
     | _ -> None
 
   /// Expire old sessions
   let expireOldSessions () =
     match cfg.ExpiryCheckFrequency >= DateTime.Now - lastExpiryCheck with
     | true -> ()
-    | _ -> store.ExpireSessions ()
-           lastExpiryCheck <- DateTime.Now
+    | _ ->
+        store.ExpireSessions ()
+        lastExpiryCheck <- DateTime.Now
 
   /// <summary>
   /// Save the session into the response
@@ -78,10 +81,12 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   member this.Load (request : Request) =
     expireOldSessions ()
     match getIdFromCookie request with
-    | Some id -> match store.RetrieveSession id with
-                 | null -> store.CreateNewSession ()
-                 | sess -> match cfg.UseRollingSessions with true -> store.UpdateLastAccessed sess.Id | _ -> ()
-                           sess
+    | Some id ->
+        match store.RetrieveSession id with
+        | null -> store.CreateNewSession ()
+        | sess ->
+            match cfg.UseRollingSessions with true -> store.UpdateLastAccessed sess.Id | _ -> ()
+            sess
     | _ -> store.CreateNewSession ()
 
   /// <summary>
@@ -110,6 +115,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   static member Enable (pipelines : IPipelines, cfg) =
     match pipelines with
     | null -> nullArg "pipelines"
-    | _ -> let provider = PersistableSessions(cfg)
-           pipelines.BeforeRequest.AddItemToStartOfPipeline(fun ctx -> PersistableSessions.LoadSession ctx provider)
-           pipelines.AfterRequest.AddItemToEndOfPipeline   (fun ctx -> PersistableSessions.SaveSession ctx provider)
+    | _ ->
+        let provider = PersistableSessions cfg
+        pipelines.BeforeRequest.AddItemToStartOfPipeline (fun ctx -> PersistableSessions.LoadSession ctx provider)
+        pipelines.AfterRequest.AddItemToEndOfPipeline    (fun ctx -> PersistableSessions.SaveSession ctx provider)
