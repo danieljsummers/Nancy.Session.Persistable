@@ -9,10 +9,10 @@ open System.Collections.Generic
 
 /// POCO used to persist session data in the collection
 [<AllowNullLiteral>]
-type MongoSession() =
-  member val Id           = ""         with get, set
-  member val LastAccessed = DateTime() with get, set
-  member val Data         = ""         with get, set
+type MongoSession (sessId : Guid, lastAccessed, data : IDictionary<string, obj>) =
+  member val Id           = string sessId                    with get, set
+  member val LastAccessed = lastAccessed                     with get, set
+  member val Data         = JsonConvert.SerializeObject data with get, set
   member this.ToSession () : IPersistableSession =
     upcast BasePersistableSession
       (Guid.Parse this.Id, this.LastAccessed, JsonConvert.DeserializeObject<Dictionary<string, obj>> this.Data)
@@ -56,60 +56,50 @@ and MongoDBSessionStore (cfg : MongoDBSessionConfiguration) =
   let collection () = cfg.Client.GetDatabase(cfg.Database).GetCollection<MongoSession> cfg.Collection
 
   /// Shorthand to filter the collection by an Id
-  let byId id = Builders<MongoSession>.Filter.Eq ((fun sess -> sess.Id), id)
+  let byId sessId = Builders<MongoSession>.Filter.Eq ((fun sess -> sess.Id), sessId)
 
   /// Forward-pipeable first-or-default call
-  let firstOrDefault (cursor : IAsyncCursor<MongoSession>) = cursor.FirstOrDefaultAsync () |> await
+  let firstOrDefault (cursor : IAsyncCursor<MongoSession>) = (cursor.FirstOrDefaultAsync >> await) ()
 
   interface IPersistableSessionStore with
     
     member __.SetUp () =
-      collection().Indexes.CreateOneAsync
-        (Builders<MongoSession>.IndexKeys.Ascending(FieldDefinition<MongoSession>.op_Implicit "LastAccessed"))
-      |> (await >> ignore)
+      IndexKeysDefinition<MongoSession>.op_Implicit "LastAccessed"
+      |> (CreateIndexModel >> collection().Indexes.CreateOneAsync >> await >> ignore)
 
-    member __.RetrieveSession id =
-      dbg (fun () -> sprintf "Retrieving session Id %s" id)
-      match collection().FindAsync (byId id)
-            |> await
-            |> firstOrDefault with
+    member __.RetrieveSession sessId =
+      dbg (fun () -> sprintf "Retrieving session Id %s" sessId)
+      match (byId >> collection().FindAsync >> await >> firstOrDefault) sessId with
       | null ->
-          dbg (fun () -> sprintf "Session Id %s not found" id)
+          dbg (fun () -> sprintf "Session Id %s not found" sessId)
           null
       | doc ->
-          dbg (fun () -> sprintf "Found session Id %s" id)
+          dbg (fun () -> sprintf "Found session Id %s" sessId)
           doc.ToSession ()
 
     member __.CreateNewSession () =
-      let id = string (Guid.NewGuid ())
-      dbg (fun () -> sprintf "Creating new session with Id %s" id)
-      let doc =
-        MongoSession(
-          Id           = id,
-          LastAccessed = DateTime.Now,
-          Data         = JsonConvert.SerializeObject (Dictionary<string, obj> ()))
-      collection().InsertOneAsync doc
-      |> await'
+      let sessId = Guid.NewGuid ()
+      dbg (fun () -> sprintf "Creating new session with Id %s" (string sessId))
+      let doc = MongoSession (sessId, DateTime.Now, Dictionary<string, obj> ())
+      (collection().InsertOneAsync >> await') doc
       doc.ToSession ()
   
-    member __.UpdateLastAccessed id =
-      dbg (fun () -> sprintf "Updating last accessed for session Id %s" (string id))
+    member __.UpdateLastAccessed sessId =
+      dbg (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
       collection().UpdateOneAsync
-        ((byId <| string id), Builders<MongoSession>.Update.Set ((fun sess -> sess.LastAccessed), DateTime.Now))
+        ((string >> byId) sessId, Builders<MongoSession>.Update.Set ((fun sess -> sess.LastAccessed), DateTime.Now))
       |> (await >> ignore)
 
     member __.UpdateSession session =
       dbg (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
-      collection().ReplaceOneAsync
-        ((byId <| string session.Id),
-         MongoSession(
-           Id           = string session.Id,
-           LastAccessed = (match cfg.UseRollingSessions with true -> DateTime.Now | _ -> session.LastAccessed),
-           Data         = JsonConvert.SerializeObject session.Items))
+      collection().ReplaceOneAsync (
+        (string >> byId) session.Id,
+        MongoSession (
+          session.Id, (match cfg.UseRollingSessions with true -> DateTime.Now | _ -> session.LastAccessed),
+          session.Items))
       |> (await >> ignore)
 
     member __.ExpireSessions () =
       dbg (fun () -> "Expiring sessions")
-      collection().DeleteManyAsync
-        (Builders<MongoSession>.Filter.Lt ((fun sess -> sess.LastAccessed), DateTime.Now - cfg.Expiry))
-      |> (await >> ignore)
+      Builders<MongoSession>.Filter.Lt ((fun sess -> sess.LastAccessed), DateTime.Now - cfg.Expiry)
+      |> (collection().DeleteManyAsync >> await >> ignore)

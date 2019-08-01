@@ -1,0 +1,11 @@
+framework: net452, netstandard2.0
+
+source https://api.nuget.org/v3/index.json
+
+nuget FSharp.Core
+nuget MongoDB.Driver
+nuget Nancy
+nuget Newtonsoft.Json
+nuget RavenDb.Client
+nuget RethinkDb.Driver
+nuget System.Data.SqlClient

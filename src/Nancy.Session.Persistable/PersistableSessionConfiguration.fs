@@ -58,7 +58,7 @@ type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfigurati
   
   abstract Store : IPersistableSessionStore with get
 
-  member this.CookieConfiguration = 
+  member __.CookieConfiguration = 
     let cfg = CookieBasedSessionsConfiguration cryptoConfig
     cfg.Serializer <- DefaultObjectSerializer ()
     cfg

@@ -1,7 +1,5 @@
 ﻿namespace Nancy.Session.Persistable
 
-open Nancy
-open Nancy.Cryptography
 open Nancy.Session
 open Newtonsoft.Json
 open System.Collections.Generic
@@ -36,16 +34,16 @@ type BasePersistableSession (id : Guid, lastAccessed : DateTime, items : IDictio
   new () = BasePersistableSession (Guid.NewGuid(), DateTime.Now, Dictionary<string, obj> ())
 
   /// The Id of the session
-  member this.Id with get () = id
+  member __.Id with get () = id
 
   /// Get or set the last access time
-  member this.LastAccessed with get () = lastAccessed
+  member __.LastAccessed with get () = lastAccessed
 
   /// The data items in this session
-  member this.Items with get () = items
+  member __.Items with get () = items
 
   /// Indicate that the data in the session has changed
-  member this.Changed () = _hasChanged <- true
+  member __.Changed () = _hasChanged <- true
 
   interface IEnumerable<KeyValuePair<string, obj>> with
     member this.GetEnumerator () = this.Items.GetEnumerator ()
@@ -73,7 +71,7 @@ type BasePersistableSession (id : Guid, lastAccessed : DateTime, items : IDictio
             this.Items.[index] <- v
             this.Changed ()
 
-    member this.HasChanged with get () = _hasChanged
+    member __.HasChanged with get () = _hasChanged
 
   interface IPersistableSession with
     
