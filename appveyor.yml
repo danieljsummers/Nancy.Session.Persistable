@@ -1,6 +1,7 @@
 os: Visual Studio 2017
 
 build_script:
+ - cmd: dotnet tool install paket
  - cmd: dotnet restore src\Nancy.Session.Persistable.sln
  - cmd: dotnet build -v n src\Nancy.Session.Persistable.sln
  - cmd: dotnet pack src\Nancy.Session.Persistable.sln -o %CD%\artifacts\nupkg
