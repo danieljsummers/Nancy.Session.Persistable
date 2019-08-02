@@ -72,32 +72,23 @@ let private forDialect dialect =
       |> List.exactlyOne
   with _ -> invalidArg "RelationalSessionConfiguration.Dialect" "Invalid SQL dialect configured"
  
-let internal withDialect dialect (f : SqlCommands -> 'a) = forDialect dialect |> f
+let internal withDialect dialect (f : SqlCommands -> 'a) = (forDialect >> f) dialect
 
 open System
 open System.Data.Common
 
 /// Await a task, returning its result
-let await task = task |> (Async.AwaitTask >> Async.RunSynchronously)
+let await  task = task |> (Async.AwaitTask >> Async.RunSynchronously)
 
 /// Await a void task
-let await' (task : System.Threading.Tasks.Task) =
-  task |> (Async.AwaitIAsyncResult >> Async.Ignore >> Async.RunSynchronously)
+let await' task = task |> (Async.AwaitIAsyncResult >> Async.Ignore >> Async.RunSynchronously)
+
+/// Is a string null or empty?
+let isNullOrEmpty x = isNull x || x = ""
 
 /// Get an open connection to the data store
-let createConn connStr cmds =
-  let c =
-#if NET452
-    DbProviderFactories.GetFactory((forDialect cmds.Dialect).ProviderFactory).CreateConnection ()
-#else
-#if NETSTANDARD2_0
-    match cmds.Dialect with
-    | Dialect.SqlServer -> new System.Data.SqlClient.SqlConnection ()
-    | d -> failwithf "Dialect %A not supported" d
-#else
-    failwithf "Framework not supported"
-#endif
-#endif
+let createConn (factory : DbProviderFactory) connStr =
+  let c = factory.CreateConnection ()
   c.ConnectionString <- connStr
   c.OpenAsync () |> await'
   c
@@ -134,7 +125,7 @@ let tableExists (conn : DbConnection) schema table cmds =
     match cmds.Dialect with
     | Dialect.SQLite ->
         // Schema = attached database; must change table, not pass parameter
-        match String.IsNullOrEmpty schema with
+        match isNullOrEmpty schema with
         | true -> cmds.TableExistence
         | _ -> cmds.TableExistence.Replace ("FROM ", sprintf "FROM %s." schema) 
     | _ -> cmds.TableExistence
@@ -144,10 +135,11 @@ let tableExists (conn : DbConnection) schema table cmds =
 
 /// Create a qualified table name if the schema is present, and an unqualified one if it is not
 let qualifiedTable schema table =
-  match System.String.IsNullOrEmpty schema with true -> table | _ -> sprintf "%s.%s" schema table
+  match isNullOrEmpty schema with true -> table | _ -> sprintf "%s.%s" schema table
 
-let establishDataStore connectionString schema table cmds =
-  use conn = createConn connectionString cmds
+/// Make sure that the session table exists
+let establishDataStore provider connectionString schema table cmds =
+  use conn = createConn provider connectionString
   match tableExists conn schema table cmds with
   | true -> ()
   | _ ->

@@ -5,13 +5,14 @@ open Nancy.Session.Persistable
 open Newtonsoft.Json
 open System
 open System.Collections.Generic
-open System.Data
 open System.Data.Common
-open System.Linq
 
 /// Interface for relational configuration options
 type IRelationalSessionConfiguration =
   inherit IPersistableSessionConfiguration
+
+  /// The factory to use when creating connections to the database
+  abstract Provider : DbProviderFactory
 
   /// The name of the connection (from connectionStrings in [Web|App].config) or a connection string
   abstract NameOrConnectionString : string
@@ -27,16 +28,17 @@ type IRelationalSessionConfiguration =
 
 
 /// Configuration for relational sessions
-and RelationalSessionConfiguration (nameOrConnectionString, cryptoConfig) =
+type RelationalSessionConfiguration (provider, nameOrConnectionString, cryptoConfig) =
   inherit BasePersistableSessionConfiguration (cryptoConfig)
   
-  new (cryptoConfig) = RelationalSessionConfiguration ("", cryptoConfig)
+  new (provider, cryptoConfig) = RelationalSessionConfiguration (provider, "", cryptoConfig)
 
-  new (nameOrConnectionString) =
-    RelationalSessionConfiguration (nameOrConnectionString, CryptographyConfiguration.Default)
+  new (provider, nameOrConnectionString) =
+    RelationalSessionConfiguration (provider, nameOrConnectionString, CryptographyConfiguration.Default)
 
-  new () = RelationalSessionConfiguration CryptographyConfiguration.Default
+  new (provider) = RelationalSessionConfiguration (provider, CryptographyConfiguration.Default)
 
+  member val Provider               = provider               with get, set
   member val NameOrConnectionString = nameOrConnectionString with get, set
   member val Table                  = "NancySession"         with get, set
   member val Schema                 = ""                     with get, set
@@ -45,6 +47,7 @@ and RelationalSessionConfiguration (nameOrConnectionString, cryptoConfig) =
   override this.IsValid =
        base.IsValid
     && seq {
+         yield (not << isNull) this.Provider
          yield (not << String.IsNullOrEmpty) this.NameOrConnectionString
          yield (not << String.IsNullOrEmpty) this.Table
          yield Enum.IsDefined (typeof<Dialect>, this.Dialect)
@@ -54,6 +57,7 @@ and RelationalSessionConfiguration (nameOrConnectionString, cryptoConfig) =
   override this.Store = upcast RelationalSessionStore this
 
   interface IRelationalSessionConfiguration with
+    member this.Provider               = this.Provider
     member this.NameOrConnectionString = this.NameOrConnectionString
     member this.Table                  = this.Table
     member this.Schema                 = this.Schema
@@ -88,9 +92,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
   let dataToJson data = JsonConvert.SerializeObject data
 
   /// Shorthand for a new connection
-  let conn () =
-    createConn cfg.NameOrConnectionString
-    |> withDialect cfg.Dialect
+  let conn () = createConn cfg.Provider cfg.NameOrConnectionString
 
   /// Add "now" to the given SQL command, translating date/time to ticks for SQLite
   let addNow cmd =
@@ -101,7 +103,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
   interface IPersistableSessionStore with
     
     member __.SetUp () =
-      establishDataStore cfg.NameOrConnectionString cfg.Schema cfg.Table
+      establishDataStore cfg.Provider cfg.NameOrConnectionString cfg.Schema cfg.Table
       |> withDialect cfg.Dialect
 
     member __.RetrieveSession sessionId =

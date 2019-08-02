@@ -8,4 +8,4 @@ nuget Nancy
 nuget Newtonsoft.Json
 nuget RavenDb.Client
 nuget RethinkDb.Driver
-nuget System.Data.SqlClient
+nuget System.Data.Common

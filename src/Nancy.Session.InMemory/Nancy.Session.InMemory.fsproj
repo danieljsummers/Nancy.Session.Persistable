@@ -1,19 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
     <AssemblyName>Nancy.Session.InMemory</AssemblyName>
     <OutputType>Library</OutputType>
     <Title>Nancy.Session.InMemory</Title>
-    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/in-memory.png</PackageIconUrl>
     <Description>An in-memory session store for Nancy (utilizing Nancy.Session.Persistable)</Description>
-    <Version>0.9.8</Version>
-    <Authors>danieljsummers</Authors>
-    <Company>Bit Badger Solutions</Company>
-    <PackageLicenseUrl />
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
+    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/in-memory.png</PackageIconUrl>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="InMemorySessions.fs" />

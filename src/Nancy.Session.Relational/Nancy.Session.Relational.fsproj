@@ -1,18 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
-    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/relational.png</PackageIconUrl>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
+    <None Include="paket.references" />
     <Compile Include="Dialect.fs" />
     <Compile Include="SqlUtils.fs" />
     <Compile Include="RelationalSessions.fs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Reference Include="System.Data" Version="4.0.0.0" Condition="'$(TargetFramework)' == 'net452'" />
     <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

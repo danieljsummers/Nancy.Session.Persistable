@@ -1,21 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
     <AssemblyName>Nancy.Session.Persistable</AssemblyName>
     <OutputType>Library</OutputType>
     <Title>Nancy.Session.Persistable</Title>
     <Description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</Description>
-    <ApplicationVersion>0.9.8</ApplicationVersion>
-    <Version>0.9.8</Version>
-    <Authors>danieljsummers</Authors>
-    <PackageProjectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</PackageProjectUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/blob/master/icons/persistable.png</PackageIconUrl>
-    <Company>Bit Badger Solutions</Company>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PersistableSession.fs" />
