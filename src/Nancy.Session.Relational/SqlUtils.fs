@@ -2,13 +2,13 @@
 module internal Nancy.Session.Relational.SqlUtils
 
 /// Dialect / SQL command map
-type internal SqlCommands = {
-  Dialect         : Dialect
-  ProviderFactory : string
-  DefaultSchema   : string option
-  TableExistence  : string
-  CreateTable     : string
-}
+type internal SqlCommands =
+  { Dialect         : Dialect
+    ProviderFactory : string
+    DefaultSchema   : string option
+    TableExistence  : string
+    CreateTable     : string
+    }
 
 /// Lookup for SQL dialect-specific implementations
 let private sqlLookup =
@@ -22,7 +22,8 @@ let private sqlLookup =
                           last_accessed SMALLDATETIME NOT NULL INDEX idx_session_last_accessed,
                           data VARCHAR(MAX) NOT NULL
                         );
-                        """ }
+                        """
+      }
     { Dialect         = Dialect.PostgreSql
       ProviderFactory = "Npgsql"
       DefaultSchema   = Some "SELECT CURRENT_SCHEMA()"
@@ -34,7 +35,8 @@ let private sqlLookup =
                           data TEXT NOT NULL
                         );
                         CREATE INDEX idx_session_last_accessed ON %% (last_accessed); 
-                        """ }
+                        """
+      }
     { Dialect         = Dialect.MySql
       ProviderFactory = "MySql.Data.MySqlClient"
       DefaultSchema   = Some "SELECT DATABASE()"
@@ -46,7 +48,8 @@ let private sqlLookup =
                           data TEXT NOT NULL
                         ),
                         INDEX idx_session_last_accessed (last_accessed);
-                        """ }
+                        """
+      }
     { Dialect         = Dialect.SQLite
       ProviderFactory = "System.Data.SQLite"
       DefaultSchema   = None
@@ -58,8 +61,9 @@ let private sqlLookup =
                           data TEXT NOT NULL
                         );
                         CREATE INDEX idx_session_last_accessed ON %% (last_accessed);
-                        """ }
-  ]
+                        """
+      }
+    ]
 
 /// Get the SQL details for a given dialect
 let private forDialect dialect =
@@ -86,7 +90,7 @@ let createConn connStr cmds =
 #if NET452
     DbProviderFactories.GetFactory((forDialect cmds.Dialect).ProviderFactory).CreateConnection ()
 #else
-#if NETSTANDARD1_6
+#if NETSTANDARD2_0
     match cmds.Dialect with
     | Dialect.SqlServer -> new System.Data.SqlClient.SqlConnection ()
     | d -> failwithf "Dialect %A not supported" d

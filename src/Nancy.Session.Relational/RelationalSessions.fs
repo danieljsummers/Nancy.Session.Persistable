@@ -106,7 +106,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
 
     member __.RetrieveSession sessionId =
       let parseLastAccessed (rdr : DbDataReader) =
-        match cfg.Dialect with Dialect.SQLite -> DateTime(rdr.GetInt64 1) | _ -> rdr.GetDateTime 1
+        match cfg.Dialect with Dialect.SQLite -> DateTime (rdr.GetInt64 1) | _ -> rdr.GetDateTime 1
       use conn = conn ()
       use cmd  = createCmd conn selectSql
       addParam cmd sessionId
@@ -121,7 +121,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
       | _ -> null
 
     member __.CreateNewSession () =
-      let sess = BasePersistableSession (Guid.NewGuid(), DateTime.Now, Dictionary<string, obj>())
+      let sess = BasePersistableSession (Guid.NewGuid(), DateTime.Now, Dictionary<string, obj> ())
       use conn = conn ()
       use cmd  = createCmd conn createSql
       addParam cmd (string sess.Id)
