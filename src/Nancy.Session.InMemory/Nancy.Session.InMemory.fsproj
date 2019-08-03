@@ -2,9 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
-    <AssemblyName>Nancy.Session.InMemory</AssemblyName>
     <OutputType>Library</OutputType>
-    <Title>Nancy.Session.InMemory</Title>
     <Description>An in-memory session store for Nancy (utilizing Nancy.Session.Persistable)</Description>
     <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/in-memory.png</PackageIconUrl>
   </PropertyGroup>

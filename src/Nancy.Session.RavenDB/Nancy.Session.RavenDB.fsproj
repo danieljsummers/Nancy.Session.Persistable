@@ -2,9 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Nancy.Session.RavenDB</AssemblyName>
     <OutputType>Library</OutputType>
-    <Title>Nancy.Session.RavenDB</Title>
     <Description>A RavenDB-backed session provider for Nancy (utilizing Nancy.Session.Persistable)</Description>
     <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/ravendb.png</PackageIconUrl>
     <PackageTags>$(PackageTags) RavenDB</PackageTags>

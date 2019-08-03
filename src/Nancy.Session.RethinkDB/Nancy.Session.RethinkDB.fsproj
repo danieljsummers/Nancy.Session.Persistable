@@ -2,9 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
-    <AssemblyName>Nancy.Session.RethinkDB</AssemblyName>
     <OutputType>Library</OutputType>
-    <Title>Nancy.Session.RethinkDB</Title>
     <Description>A RethinkDB-backed session provider for Nancy (utilizing Nancy.Session.Persistable)</Description>
     <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/rethinkdb.png</PackageIconUrl>
     <PackageTags>$(PackageTags) RethinkDB</PackageTags>
