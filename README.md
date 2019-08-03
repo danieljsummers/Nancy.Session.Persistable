@@ -10,7 +10,7 @@ The ```Nancy.Session.Persistable``` pacakge will be installed when you install a
   <th>Data Store</th>
   <th>Docs</th>
   <th>Package</th>
-  <th>Stable<br>(Nancy 2,<br>.NET Framework/Core)</th>
+  <th>Stable <em>(Nancy v2)</em></th>
   </tr>
   <tr>
   <td><strong>Relational</strong></td>
@@ -50,7 +50,7 @@ _NOTE 2: Possible future implementations include Redis and disk storage._
 
 ## Enable It
 
-To enable sessions, you have to [override the default Nancy bootstrapper](https://github.com/NancyFx/Nancy/wiki/Bootstrapper). This sounds way scarier than it actually is; you can do it in just a few lines of code.  Following their lead, persistable sessions are fully [SDHP](https://github.com/NancyFx/Nancy#the-super-duper-happy-path)-compliant.
+To enable sessions, you have to [override the default Nancy bootstrapper](https://github.com/NancyFx/Nancy/wiki/Bootstrapper). This sounds way scarier than it actually is; you can do it in just a few lines of code. Following their lead, persistable sessions are fully [SDHP](https://github.com/NancyFx/Nancy#the-super-duper-happy-path)-compliant.
 
 You can do it in C#...
 ```csharp
