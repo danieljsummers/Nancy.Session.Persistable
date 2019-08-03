@@ -8,7 +8,7 @@ open Nancy.Helpers
 open System
 
 /// Persistable sessions
-type PersistableSessions(cfg : IPersistableSessionConfiguration) =
+type PersistableSessions (cfg : IPersistableSessionConfiguration) =
 
   do
     match cfg with
@@ -32,8 +32,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
     cookie.Domain  <- config.Domain
     cookie.Path    <- config.Path
     cookie.Expires <- Nullable <| session.LastAccessed + cfg.Expiry
-    response.WithCookie cookie
-    |> ignore
+    (response.WithCookie >> ignore) cookie
 
   /// Get the session Id from the cookie
   let getIdFromCookie (request : Request) =
@@ -68,7 +67,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   /// </summary>
   /// <param name="session">Session to save</param>
   /// <param name="response">Response to save into</param>
-  member this.Save (session : IPersistableSession) (response : Nancy.Response) =
+  member __.Save (session : IPersistableSession) (response : Nancy.Response) =
     expireOldSessions ()
     match isNull session || not session.HasChanged with true -> () | _ -> store.UpdateSession session
     setCookie session response
@@ -78,7 +77,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   /// </summary>
   /// <param name="request">Request to load from</param>
   /// <returns>ISession containing the load session values</returns>
-  member this.Load (request : Request) =
+  member __.Load (request : Request) =
     expireOldSessions ()
     match getIdFromCookie request with
     | Some id ->
@@ -101,7 +100,7 @@ type PersistableSessions(cfg : IPersistableSessionConfiguration) =
   /// Loads the request session
   /// </summary>
   /// <param name="ctx">Nancy context</param>
-  /// <param name="store">RethinkDB session store instance</param>
+  /// <param name="provider">Persistable session provider instance</param>
   /// <returns>Always returns null, as a non-null return indicates a change in the pipeline</returns>
   static member private LoadSession (ctx : NancyContext) (provider : PersistableSessions) : Nancy.Response =
     match ctx.Request with null -> () | _ -> ctx.Request.Session <- provider.Load ctx.Request

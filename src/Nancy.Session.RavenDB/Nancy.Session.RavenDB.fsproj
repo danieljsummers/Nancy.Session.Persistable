@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Nancy.Session.RavenDB</AssemblyName>
+    <OutputType>Library</OutputType>
+    <Title>Nancy.Session.RavenDB</Title>
+    <Description>A RavenDB-backed session provider for Nancy (utilizing Nancy.Session.Persistable)</Description>
+    <PackageIconUrl>https://github.com/danieljsummers/Nancy.Session.Persistable/raw/master/icons/ravendb.png</PackageIconUrl>
+    <PackageTags>$(PackageTags) RavenDB</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="paket.references" />
+    <Compile Include="RavenDBSessions.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nancy.Session.Persistable\Nancy.Session.Persistable.fsproj" />
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>

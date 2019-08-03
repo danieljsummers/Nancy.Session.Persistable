@@ -1,21 +1,17 @@
-﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
-
+    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
+    <AssemblyName>Nancy.Session.Persistable</AssemblyName>
+    <OutputType>Library</OutputType>
+    <Title>Nancy.Session.Persistable</Title>
     <Description>A framework for Nancy to allow persistent sessions and strongly-typed access to session values</Description>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="PersistableSession.fs" />
     <Compile Include="PersistableSessionConfiguration.fs" />
     <Compile Include="RequestExtensions.fs" />
     <Compile Include="PersistableSessions.fs" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="4.1.*" />
-    <PackageReference Include="Nancy" Version="1.4.3" Condition="'$(TargetFramework)' == 'net452'" />
-    <PackageReference Include="Nancy" Version="2.0.0-clinteastwood" Condition="'$(TargetFramework)' == 'netstandard1.6'" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.*" />
-  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
