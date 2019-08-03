@@ -5,6 +5,7 @@ open Nancy.Session.Persistable
 open Newtonsoft.Json
 open System
 open System.Collections.Generic
+open System.Configuration
 open System.Data.Common
 
 /// Interface for relational configuration options
@@ -12,10 +13,10 @@ type IRelationalSessionConfiguration =
   inherit IPersistableSessionConfiguration
 
   /// The factory to use when creating connections to the database
-  abstract Provider : DbProviderFactory
+  abstract Factory : DbProviderFactory
 
   /// The name of the connection (from connectionStrings in [Web|App].config) or a connection string
-  abstract NameOrConnectionString : string
+  abstract ConnectionString : string
 
   /// The name of the table where sessions will be stored
   abstract Table : string
@@ -28,47 +29,95 @@ type IRelationalSessionConfiguration =
 
 
 /// Configuration for relational sessions
-type RelationalSessionConfiguration (provider, nameOrConnectionString, cryptoConfig) =
+type RelationalSessionConfiguration (factory, connStr, cryptoConfig) =
   inherit BasePersistableSessionConfiguration (cryptoConfig)
   
-  new (provider, cryptoConfig) = RelationalSessionConfiguration (provider, "", cryptoConfig)
+  /// Derive the dialect from the type of the DbProviderFactory
+  let dialect =
+    match deriveDialect factory with
+    | Some x -> x
+    | None ->
+        factory.GetType().Name
+        |> (sprintf """Unrecognized DbProviderFactory type "%s" received""" >> invalidArg "provider")
 
-  new (provider, nameOrConnectionString) =
-    RelationalSessionConfiguration (provider, nameOrConnectionString, CryptographyConfiguration.Default)
+  /// Translate a possible connection string name into a connection string
+  let toConnStr x =
+    match isNullOrEmpty x with
+    | true -> ""
+    | false ->
+        match x.Contains "=" with
+        | true -> x
+        | false -> 
+            match ConfigurationManager.ConnectionStrings.[x] with
+            | null -> invalidArg "ConnectionString" (sprintf """Connection string "%s" not found""" x)
+            | y -> y.ConnectionString
 
-  new (provider) = RelationalSessionConfiguration (provider, CryptographyConfiguration.Default)
+  /// Backing field for ConnectionString property
+  let mutable _connStr = toConnStr connStr
 
-  member val Provider               = provider               with get, set
-  member val NameOrConnectionString = nameOrConnectionString with get, set
-  member val Table                  = "NancySession"         with get, set
-  member val Schema                 = ""                     with get, set
-  member val Dialect                = Dialect.SqlServer      with get, set
+  /// <summary>
+  /// Construct a new instance of the <see cref="RelationalSessionConfiguration" /> class
+  /// </summary>
+  /// <param name="factory">The DbProviderFactory instance to use for this session store</param>
+  /// <param name="cryptoConfig">The Nancy cryptography settings to use for the session cookie</param>
+  new (factory, cryptoConfig) = RelationalSessionConfiguration (factory, "", cryptoConfig)
+
+  /// <summary>
+  /// Construct a new instance of the <see cref="RelationalSessionConfiguration" /> class
+  /// </summary>
+  /// <param name="factory">The DbProviderFactory instance to use for this session store</param>
+  /// <param name="connStr">The connection string (or connection string name) to use for the session store</param>
+  new (factory, connStr) = RelationalSessionConfiguration (factory, connStr, CryptographyConfiguration.Default)
+
+  /// <summary>
+  /// Construct a new instance of the <see cref="RelationalSessionConfiguration" /> class
+  /// </summary>
+  /// <param name="factory">The DbProviderFactory instance to use for this session store</param>
+  new (factory) = RelationalSessionConfiguration (factory, CryptographyConfiguration.Default)
+
+  /// The DbProviderFactory used by this session store
+  member val Factory = factory with get, set
+  
+  /// The table in which session data will be stored
+  member val Table = "NancySession" with get, set
+  
+  /// The schema in which the session table resides
+  member val Schema = "" with get, set
+    
+  /// The connection string to use (may be set by connection string name from config)
+  member __.ConnectionString 
+    with get () = _connStr
+      and set v = _connStr <- toConnStr v
+  
+  /// The SQL dialect used by this session store (derived from DbProviderFactory implementation)
+  member __.Dialect
+    with get () = dialect
+      and set (_ : Dialect) = invalidOp "Dialect is derived from the DbProviderFactory type"
 
   override this.IsValid =
        base.IsValid
     && seq {
-         yield (not << isNull) this.Provider
-         yield (not << String.IsNullOrEmpty) this.NameOrConnectionString
-         yield (not << String.IsNullOrEmpty) this.Table
-         yield Enum.IsDefined (typeof<Dialect>, this.Dialect)
+         yield (not << isNull)        this.Factory
+         yield (not << isNullOrEmpty) this.ConnectionString
+         yield (not << isNullOrEmpty) this.Table
          }
        |> Seq.reduce (&&)
 
   override this.Store = upcast RelationalSessionStore this
 
   interface IRelationalSessionConfiguration with
-    member this.Provider               = this.Provider
-    member this.NameOrConnectionString = this.NameOrConnectionString
-    member this.Table                  = this.Table
-    member this.Schema                 = this.Schema
-    member this.Dialect                = this.Dialect
+    member this.Factory          = this.Factory
+    member this.ConnectionString = this.ConnectionString
+    member this.Table            = this.Table
+    member this.Schema           = this.Schema
+    member this.Dialect          = this.Dialect
 
 
 /// Session store implementation for Entity Framework
 and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
 
   /// If the schema was specified, qualify access to the table
-  let table = match String.IsNullOrEmpty cfg.Schema with true -> cfg.Table | _ -> sprintf "%s.%s" cfg.Schema cfg.Table
+  let table = qualifiedTable cfg.Schema cfg.Table
   
   /// SQL to select a session
   let selectSql = sprintf "SELECT id, last_accessed, data FROM %s WHERE id = ?" table
@@ -92,7 +141,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
   let dataToJson data = JsonConvert.SerializeObject data
 
   /// Shorthand for a new connection
-  let conn () = createConn cfg.Provider cfg.NameOrConnectionString
+  let conn () = createConn cfg.Factory cfg.ConnectionString
 
   /// Add "now" to the given SQL command, translating date/time to ticks for SQLite
   let addNow cmd =
@@ -103,7 +152,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
   interface IPersistableSessionStore with
     
     member __.SetUp () =
-      establishDataStore cfg.Provider cfg.NameOrConnectionString cfg.Schema cfg.Table
+      establishDataStore cfg.Factory cfg.ConnectionString cfg.Schema cfg.Table
       |> withDialect cfg.Dialect
 
     member __.RetrieveSession sessionId =
@@ -113,9 +162,8 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
       use cmd  = createCmd conn selectSql
       addParam cmd sessionId
       use rdr = cmd.ExecuteReaderAsync () |> await
-      match rdr.HasRows with
+      match rdr.ReadAsync () |> await with
       | true ->
-          rdr.ReadAsync () |> (await >> ignore)
           upcast BasePersistableSession
             ((rdr.GetString >> Guid.Parse) 0,
              parseLastAccessed rdr,
@@ -123,7 +171,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
       | _ -> null
 
     member __.CreateNewSession () =
-      let sess = BasePersistableSession (Guid.NewGuid(), DateTime.Now, Dictionary<string, obj> ())
+      let sess = BasePersistableSession (Guid.NewGuid (), DateTime.Now, Dictionary<string, obj> ())
       use conn = conn ()
       use cmd  = createCmd conn createSql
       addParam cmd (string sess.Id)

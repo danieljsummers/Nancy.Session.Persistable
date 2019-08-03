@@ -13,7 +13,7 @@ type internal SqlCommands =
 /// Lookup for SQL dialect-specific implementations
 let private sqlLookup =
   [ { Dialect         = Dialect.SqlServer
-      ProviderFactory = "System.Data.SqlClient"
+      ProviderFactory = "SqlClientFactory"
       DefaultSchema   = Some "SELECT SCHEMA_NAME()"
       TableExistence  = "SELECT COUNT(table_name) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?"
       CreateTable     = """
@@ -25,7 +25,7 @@ let private sqlLookup =
                         """
       }
     { Dialect         = Dialect.PostgreSql
-      ProviderFactory = "Npgsql"
+      ProviderFactory = "NpgsqlFactory"
       DefaultSchema   = Some "SELECT CURRENT_SCHEMA()"
       TableExistence  = "SELECT COUNT(tablename) FROM pg_tables WHERE schemaname = ? AND tablename = ?"
       CreateTable     = """
@@ -38,7 +38,7 @@ let private sqlLookup =
                         """
       }
     { Dialect         = Dialect.MySql
-      ProviderFactory = "MySql.Data.MySqlClient"
+      ProviderFactory = "MySqlClientFactory"
       DefaultSchema   = Some "SELECT DATABASE()"
       TableExistence  = "SELECT COUNT(table_name) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?"
       CreateTable     = """
@@ -51,7 +51,7 @@ let private sqlLookup =
                         """
       }
     { Dialect         = Dialect.SQLite
-      ProviderFactory = "System.Data.SQLite"
+      ProviderFactory = "SQLiteFactory"
       DefaultSchema   = None
       TableExistence  = "SELECT COUNT(name) FROM sqlite_master WHERE type = 'table' and name = ?"
       CreateTable     = """
@@ -76,6 +76,12 @@ let internal withDialect dialect (f : SqlCommands -> 'a) = (forDialect >> f) dia
 
 open System
 open System.Data.Common
+
+/// Derive the dialect based on the name of the DbProviderFactory implementation
+let deriveDialect (factory : DbProviderFactory) =
+  sqlLookup
+  |> List.tryFind (fun cmds -> cmds.ProviderFactory = factory.GetType().Name)
+  |> Option.map (fun cmds -> cmds.Dialect)
 
 /// Await a task, returning its result
 let await  task = task |> (Async.AwaitTask >> Async.RunSynchronously)

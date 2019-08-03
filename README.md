@@ -2,7 +2,7 @@
 
 This is a community project that provides several session store implementations for Nancy, the lean-and-mean web framework that runs under the .NET framework.  It also provides extensions to the Nancy ```Request``` object that allow strongly-typed retrieval of objects from the session.  It uses cookies to associate the session Id with a request.
 
-## Get It ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Persistable.svg)
+## Get It ![NuGet Version](https://img.shields.io/nuget/v/Nancy.Session.Persistable.svg) [![Build status](https://ci.appveyor.com/api/projects/status/1mb2y97kshtau4ms?svg=true)](https://ci.appveyor.com/project/danieljsummers/nancy-session-persistable)
 
 The ```Nancy.Session.Persistable``` pacakge will be installed when you install any of the available back-end storage packages. Currently available:
 <table>
