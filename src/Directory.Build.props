@@ -2,7 +2,6 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <VersionPrefix>0.9.9</VersionPrefix>
-    <VersionSuffix>a</VersionSuffix>
     <PackageReleaseNotes>Relational provider API changes</PackageReleaseNotes>
     <Authors>danieljsummers</Authors>
     <Company>Bit Badger Solutions</Company>
