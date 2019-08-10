@@ -66,6 +66,11 @@ type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfigurati
   do
     this.SetSerializer ()
   
+  let mutable _useRollingSessions   = true
+  let mutable _expiry               = TimeSpan (2, 0, 0)
+  let mutable _expiryCheckFrequency = TimeSpan (0, 1, 0)
+  let mutable _logLevel             = SessionLogLevel.None
+
   abstract Store : IPersistableSessionStore with get
 
   member __.CookieConfiguration = 
@@ -75,19 +80,19 @@ type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfigurati
   
   /// Gets or sets whether to use rolling sessions (expiry based on inactivity) or not (expiry based on creation)
   abstract UseRollingSessions : bool with get, set
-  default this.UseRollingSessions with get () = true and set v = this.UseRollingSessions <- v
+  default __.UseRollingSessions with get () = _useRollingSessions and set v = _useRollingSessions <- v
 
   /// Gets or sets the session expiry period
   abstract Expiry : TimeSpan with get, set
-  default this.Expiry with get () = TimeSpan (2, 0, 0) and set v = this.Expiry <- v
+  default __.Expiry with get () = _expiry and set v = _expiry <- v
 
   /// Gets or sets the frequency with which expired sessions are removed from storage
   abstract ExpiryCheckFrequency : TimeSpan with get, set
-  default this.ExpiryCheckFrequency with get () = TimeSpan (0, 1, 0) and set v = this.ExpiryCheckFrequency <- v
+  default __.ExpiryCheckFrequency with get () = _expiryCheckFrequency and set v = _expiryCheckFrequency <- v
 
   /// Gets or sets the level of debug information to be displayed
   abstract LogLevel : SessionLogLevel with get, set
-  default this.LogLevel with get () = SessionLogLevel.None and set v = this.LogLevel <- v
+  default __.LogLevel with get () = _logLevel and set v = _logLevel <- v
 
   /// Get the validity state of the session
   abstract IsValid : bool with get

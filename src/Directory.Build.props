@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <VersionPrefix>0.9.10</VersionPrefix>
-    <VersionSuffix>a</VersionSuffix>
+    <VersionSuffix>b</VersionSuffix>
     <PackageReleaseNotes>Added logging configuration parameter; bug fix for RavenDB provider</PackageReleaseNotes>
     <Authors>danieljsummers</Authors>
     <Company>Bit Badger Solutions</Company>
