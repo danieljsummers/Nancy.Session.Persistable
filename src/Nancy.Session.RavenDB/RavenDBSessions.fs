@@ -139,8 +139,9 @@ and RavenDBSessionStore (cfg : RavenDBSessionConfiguration) =
     member __.ExpireSessions () =
       dbg (fun () -> "Expiring sessions")
       use sess = newSession ()
+      let maxAge = DateTime.Now - cfg.Expiry
       sess.Query<RavenDBSessionDocument>(sprintf "%s/ByLastAccessed" cfg.Collection)
-        .Where((fun x -> x.LastAccessed < DateTime.Now - cfg.Expiry), true)
+        .Where((fun x -> x.LastAccessed < maxAge), true)
         .ToListAsync ()
       |> await
       |> Seq.iter (fun x -> sess.Delete x.Id)
