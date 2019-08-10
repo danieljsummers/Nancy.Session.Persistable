@@ -149,29 +149,38 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
     | Dialect.SQLite -> addParam cmd DateTime.Now.Ticks
     | _ -> addParam cmd DateTime.Now
 
+  /// Log access point
+  let log = LogUtils<RelationalSessionStore> cfg.LogLevel
+
   interface IPersistableSessionStore with
     
     member __.SetUp () =
       establishDataStore cfg.Factory cfg.ConnectionString cfg.Schema cfg.Table
       |> withDialect cfg.Dialect
 
-    member __.RetrieveSession sessionId =
+    member __.RetrieveSession sessId =
       let parseLastAccessed (rdr : DbDataReader) =
         match cfg.Dialect with Dialect.SQLite -> DateTime (rdr.GetInt64 1) | _ -> rdr.GetDateTime 1
+      log.dbug (fun () -> sprintf "Retrieving session Id %s" sessId)
       use conn = conn ()
       use cmd  = createCmd conn selectSql
-      addParam cmd sessionId
+      addParam cmd sessId
       use rdr = cmd.ExecuteReaderAsync () |> await
       match rdr.ReadAsync () |> await with
       | true ->
+          log.dbug (fun () -> sprintf "Found session Id %s" sessId)
           upcast BasePersistableSession
             ((rdr.GetString >> Guid.Parse) 0,
              parseLastAccessed rdr,
              (rdr.GetString >> JsonConvert.DeserializeObject<Dictionary<string, obj>>) 2)
-      | _ -> null
+      | _ ->
+          log.dbug (fun () -> sprintf "Session Id %s not found" sessId)
+          null
 
     member __.CreateNewSession () =
-      let sess = BasePersistableSession (Guid.NewGuid (), DateTime.Now, Dictionary<string, obj> ())
+      let sessId = Guid.NewGuid ()
+      log.info (fun () -> sprintf "Creating new session with Id %s" (string sessId))
+      let sess = BasePersistableSession (sessId, DateTime.Now, Dictionary<string, obj> ())
       use conn = conn ()
       use cmd  = createCmd conn createSql
       addParam cmd (string sess.Id)
@@ -180,7 +189,8 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
       runCmd cmd
       upcast sess
 
-    member __.UpdateLastAccessed id =
+    member __.UpdateLastAccessed sessId =
+      log.dbug (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
       use conn = conn ()
       use cmd  = createCmd conn lastAccessUpdateSql
       addNow   cmd
@@ -188,6 +198,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
       runCmd cmd
 
     member __.UpdateSession session =
+      log.dbug (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
       use conn = conn ()
       use cmd = createCmd conn (match cfg.UseRollingSessions with true -> dataAndAccessUpdateSql | _ -> dataUpdateSql)
       match cfg.UseRollingSessions with true -> addNow cmd | _ -> ()
@@ -196,6 +207,7 @@ and RelationalSessionStore (cfg : IRelationalSessionConfiguration) =
       runCmd cmd
 
     member __.ExpireSessions () =
+      log.dbug (fun () -> "Expiring sessions")
       use conn = conn ()
       use cmd  = createCmd conn expireSql
       addParam cmd (DateTime.Now - cfg.Expiry)

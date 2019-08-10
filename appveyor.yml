@@ -4,7 +4,7 @@ build_script:
  - cmd: dotnet tool install --global paket
  - cmd: dotnet restore src\Nancy.Session.Persistable.sln
  - cmd: dotnet build -v n --configuration Release src\Nancy.Session.Persistable.sln
- - cmd: dotnet pack src\Nancy.Session.Persistable.sln -o %CD%\artifacts\nupkg
+ - cmd: dotnet pack --configuration Release src\Nancy.Session.Persistable.sln -o %CD%\artifacts\nupkg
  
 artifacts:
  - path: artifacts\nupkg\*.nupkg 

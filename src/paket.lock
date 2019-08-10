@@ -86,7 +86,7 @@ NUGET
       System.Runtime.InteropServices.RuntimeInformation (>= 4.3) - restriction: || (&& (== net452) (>= netstandard2.0)) (== netstandard2.0)
       System.Security.Cryptography.Cng (>= 4.5) - restriction: || (&& (== net452) (>= netstandard2.0)) (== netstandard2.0)
       System.Threading.Tasks.Extensions (>= 4.5.3) - restriction: || (&& (== net452) (>= netstandard2.0)) (== netstandard2.0)
-    RethinkDb.Driver (2.3.100)
+    RethinkDb.Driver (2.3.101)
       Common.Logging (>= 3.3) - restriction: || (== net452) (&& (== netstandard2.0) (>= net45))
       Microsoft.Extensions.Logging.Abstractions (>= 2.0) - restriction: || (&& (== net452) (< net45) (>= netstandard2.0)) (== netstandard2.0)
       Newtonsoft.Json (>= 10.0.3)

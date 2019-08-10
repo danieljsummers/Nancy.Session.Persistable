@@ -8,6 +8,7 @@
     <PackageTags>$(PackageTags) RethinkDB</PackageTags>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="paket.references" />
     <Compile Include="RethinkDBSessions.fs" />
   </ItemGroup>
   <ItemGroup>

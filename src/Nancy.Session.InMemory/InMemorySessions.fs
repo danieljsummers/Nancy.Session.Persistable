@@ -38,12 +38,8 @@ type InMemorySessionConfiguration (cryptoConfig : CryptographyConfiguration) =
 /// The InMemory session store
 and InMemorySessionStore (cfg : InMemorySessionConfiguration) =
   
-  /// Debug text - may be removed before 1.0
-  let dbg (text : unit -> string) =
-#if DEBUG
-    System.Console.WriteLine (sprintf "[InMemorySession] %s" (text ()))
-#endif
-    ()
+  /// Log access point
+  let log = LogUtils<InMemorySessionStore> cfg.LogLevel
 
   /// You expected a dictionary?  Pfft....
   static let mutable sessions : StoredSession list = []
@@ -53,14 +49,14 @@ and InMemorySessionStore (cfg : InMemorySessionConfiguration) =
     member __.SetUp () = ()
 
     member __.RetrieveSession id =
-      dbg (fun () -> sprintf "Retrieving session Id %s" id)
+      log.dbug (fun () -> sprintf "Retrieving session Id %s" id)
       match sessions
             |> List.tryFind (fun sess -> id = string sess.Id) with
       | Some sess ->
-          dbg (fun () -> sprintf "Found session Id %s" id)
+          log.dbug (fun () -> sprintf "Found session Id %s" id)
           sess.ToSession ()
       | None ->
-          dbg (fun () -> sprintf "Session Id %s not found" id)
+          log.dbug (fun () -> sprintf "Session Id %s not found" id)
           null
 
     member __.CreateNewSession () =
@@ -69,12 +65,12 @@ and InMemorySessionStore (cfg : InMemorySessionConfiguration) =
           LastAccessed = DateTime.Now
           Data         = Dictionary<string, obj>()
           }
-      dbg (fun () -> sprintf "Creating new session with Id %s" (string session.Id))
+      log.info (fun () -> sprintf "Creating new session with Id %s" (string session.Id))
       sessions <- session :: sessions
       session.ToSession ()
   
     member __.UpdateLastAccessed id =
-      dbg (fun () -> sprintf "Updating last accessed for session Id %s" (string id))
+      log.dbug (fun () -> sprintf "Updating last accessed for session Id %s" (string id))
       match sessions
             |> List.tryFind (fun sess -> id = sess.Id) with
       | Some sess ->
@@ -85,14 +81,14 @@ and InMemorySessionStore (cfg : InMemorySessionConfiguration) =
       | None -> ()
 
     member __.UpdateSession session =
-      dbg (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
+      log.dbug (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
       sessions <-
         sessions
         |> List.filter (fun sess -> sess.Id <> session.Id)
         |> List.append [ StoredSession.From session ]
 
     member __.ExpireSessions () =
-      dbg (fun () -> "Expiring sessions")
+      log.dbug (fun () -> "Expiring sessions")
       sessions <-
         sessions
         |> List.filter (fun sess -> sess.LastAccessed >= DateTime.Now - cfg.Expiry)

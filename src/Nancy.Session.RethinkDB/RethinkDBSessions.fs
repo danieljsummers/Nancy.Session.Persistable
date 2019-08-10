@@ -66,12 +66,8 @@ and RethinkDBSessionStore (cfg : RethinkDBSessionConfiguration) =
   /// Await a Task<T>
   let await task = task |> (Async.AwaitTask >> Async.RunSynchronously)
 
-  /// Debug text - may be removed before 1.0
-  let dbg (text : unit -> string) =
-#if DEBUG
-    System.Console.WriteLine (sprintf "[RethinkSession] %s" (text ()))
-#endif
-    ()
+  /// Log access point
+  let log = LogUtils<RethinkDBSessionStore> cfg.LogLevel
 
   /// Check the result of a RethinkDB operation
   let checkResult format (msg : unit -> string) (result : Model.Result) =
@@ -84,12 +80,12 @@ and RethinkDBSessionStore (cfg : RethinkDBSessionConfiguration) =
 
   /// Create the database if it does not exist
   let databaseCheck () =
-    dbg (fun () -> sprintf "Checking for the existence of database %s" cfg.Database)
+    log.dbug (fun () -> sprintf "Checking for the existence of database %s" cfg.Database)
     match (r.DbList().RunAtomAsync<List<string>> >> await >> Seq.exists (fun db -> db = cfg.Database))
             cfg.Connection with
     | true -> ()
     | _ ->
-        dbg (fun () -> sprintf "Creating database %s" cfg.Database)
+        log.dbug (fun () -> sprintf "Creating database %s" cfg.Database)
         (r.DbCreate(cfg.Database).RunWriteAsync >> await
           >> checkResult "Could not create RethinkDB session store database %s: %s" (fun () -> cfg.Database))
             cfg.Connection
@@ -97,12 +93,12 @@ and RethinkDBSessionStore (cfg : RethinkDBSessionConfiguration) =
   /// Create the table if it does not exist
   let tableCheck () =
     let tblName = sprintf "%s.%s" cfg.Database cfg.Table
-    dbg (fun () -> sprintf "Checking for the existence of table %s" tblName)
+    log.dbug (fun () -> sprintf "Checking for the existence of table %s" tblName)
     match (r.Db(cfg.Database).TableList().RunAtomAsync<List<string>> >> await >> Seq.exists (fun t -> t = cfg.Table))
             cfg.Connection with
     | true -> ()
     | _ ->
-        dbg (fun () -> sprintf "Creating table %s" tblName)
+        log.dbug (fun () -> sprintf "Creating table %s" tblName)
         (r.Db(cfg.Database).TableCreate(cfg.Table).RunWriteAsync >> await
           >> checkResult "Could not create RethinkDB session store table %s: %s" (fun () -> tblName))
             cfg.Connection
@@ -110,12 +106,12 @@ and RethinkDBSessionStore (cfg : RethinkDBSessionConfiguration) =
   /// Create the index on the last accessed date/time if it does not exist
   let indexCheck () =
     let idxName = "LastAccessed"
-    dbg (fun () -> sprintf "Checking for the existence of index %s" idxName)
+    log.dbug (fun () -> sprintf "Checking for the existence of index %s" idxName)
     match (table().IndexList().RunAtomAsync<List<string>> >> await >> Seq.exists (fun idx -> idx = idxName))
             cfg.Connection with
     | true -> ()
     | _ ->
-        dbg (fun () -> sprintf "Creating index %s" idxName)
+        log.dbug (fun () -> sprintf "Creating index %s" idxName)
         (table().IndexCreate(idxName).RunWriteAsync >> await
           >> checkResult "Could not create last accessed index on RethinkDB session store table %s: %s"
                           (fun () -> sprintf "%s.%s" cfg.Database cfg.Table))
@@ -129,18 +125,18 @@ and RethinkDBSessionStore (cfg : RethinkDBSessionConfiguration) =
       indexCheck    ()
 
     member __.RetrieveSession id =
-      dbg (fun () -> sprintf "Retrieving session Id %s" id)
+      log.dbug (fun () -> sprintf "Retrieving session Id %s" id)
       match (table().Get(id).RunAtomAsync<RethinkDBSessionDocument> >> await >> box) cfg.Connection with
       | null ->
-          dbg (fun () -> sprintf "Session Id %s not found" id)
+          log.dbug (fun () -> sprintf "Session Id %s not found" id)
           null
       | d ->
-          dbg (fun () -> sprintf "Found session Id %s" id)
+          log.dbug (fun () -> sprintf "Found session Id %s" id)
           (unbox<RethinkDBSessionDocument> d).ToSession ()
 
     member this.CreateNewSession () =
       let sessId = (Guid.NewGuid >> string) ()
-      dbg (fun () -> sprintf "Creating new session with Id %s" sessId)
+      log.info (fun () -> sprintf "Creating new session with Id %s" sessId)
       (table()
         .Insert(
           { RethinkDBSessionDocument.Empty with
@@ -151,13 +147,13 @@ and RethinkDBSessionStore (cfg : RethinkDBSessionConfiguration) =
       (this :> IPersistableSessionStore).RetrieveSession sessId
   
     member __.UpdateLastAccessed sessId =
-      dbg (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
+      log.dbug (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
       (table().Get(string sessId).Update(LastAccessUpdateDocument.Now).RunWriteAsync >> await
         >> checkResult "Could not update last access for session Id %s: %s" (fun () -> string id))
           cfg.Connection
 
     member __.UpdateSession session =
-      dbg (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
+      log.dbug (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
       (table().Get(string session.Id)
         .Replace(
           { Id           = string session.Id
@@ -168,7 +164,7 @@ and RethinkDBSessionStore (cfg : RethinkDBSessionConfiguration) =
           cfg.Connection
 
     member __.ExpireSessions () =
-      dbg (fun () -> "Expiring sessions")
+      log.dbug (fun () -> "Expiring sessions")
       (table()
         .Between(r.Minval (), DateTime.Now - cfg.Expiry)
         .OptArg("index", "LastAccessed")

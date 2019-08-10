@@ -5,6 +5,13 @@ open Nancy.Cryptography
 open Nancy.Session
 open System
 
+/// Session log levels
+type SessionLogLevel =
+| None = 0
+| Information = 1
+| Debug = 2
+
+
 /// Session store interface
 type IPersistableSessionStore =
   
@@ -44,6 +51,9 @@ and [<AllowNullLiteral>] IPersistableSessionConfiguration =
   /// How frequently to check for expired sessions
   abstract ExpiryCheckFrequency : TimeSpan with get, set
 
+  /// Whether to display debug information on the console
+  abstract LogLevel : SessionLogLevel with get, set
+
   /// Whether the configuration is valid
   abstract IsValid : bool with get
 
@@ -75,6 +85,10 @@ type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfigurati
   abstract ExpiryCheckFrequency : TimeSpan with get, set
   default this.ExpiryCheckFrequency with get () = TimeSpan (0, 1, 0) and set v = this.ExpiryCheckFrequency <- v
 
+  /// Gets or sets the level of debug information to be displayed
+  abstract LogLevel : SessionLogLevel with get, set
+  default this.LogLevel with get () = SessionLogLevel.None and set v = this.LogLevel <- v
+
   /// Get the validity state of the session
   abstract IsValid : bool with get
   default this.IsValid with get () = this.CookieConfiguration.IsValid
@@ -87,4 +101,21 @@ type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfigurati
     member this.UseRollingSessions   with get () = this.UseRollingSessions   and set v = this.UseRollingSessions <- v
     member this.Expiry               with get () = this.Expiry               and set v = this.Expiry <- v
     member this.ExpiryCheckFrequency with get () = this.ExpiryCheckFrequency and set v = this.ExpiryCheckFrequency <- v
+    member this.LogLevel             with get () = this.LogLevel             and set v = this.LogLevel <- v
     member this.IsValid              with get () = this.IsValid
+
+
+/// Logging utilities for use by session store implementations
+type LogUtils<'T> (level) as this =
+  
+  let name = this.GetType().GenericTypeArguments.[0].FullName
+
+  /// Debug text; set SessionLogLevel.Debug to display
+  member __.dbug (text : unit -> string) =
+    match level with SessionLogLevel.Debug -> Console.WriteLine (sprintf "[%s] %s" name (text ())) | _ -> ()
+
+  /// Info text; set SessionLogLevel.Information to display
+  member __.info (text : unit -> string) =
+    match level with
+    | SessionLogLevel.Debug | SessionLogLevel.Information -> Console.WriteLine (sprintf "[%s] %s" name (text ()))
+    | _ -> ()

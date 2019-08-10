@@ -12,6 +12,7 @@ open System.Collections.Generic
 // ---- RavenDB document types ----
 
 /// Record used to persist sessions in the RavenDB session store
+[<CLIMutable>]
 type RavenDBSessionDocument =
   { /// The Id of the session
     Id           : string
@@ -27,7 +28,8 @@ with
       Data         = Dictionary<string, obj> ()
       }
   member this.ToSession () : IPersistableSession =
-    upcast BasePersistableSession (Guid.Parse this.Id, this.LastAccessed, this.Data)
+    let sessId = this.Id.Split('/').[1]
+    upcast BasePersistableSession (Guid.Parse sessId, this.LastAccessed, this.Data)
 
 // ---- Configuration and Store implementation ----
 
@@ -78,12 +80,8 @@ and RavenDBSessionStore (cfg : RavenDBSessionConfiguration) =
   let setLastAccessedNow (sessId : string) (sess : IAsyncDocumentSession) =
     sess.Advanced.Patch (sessId, (fun s -> s.LastAccessed), DateTime.Now)
 
-  /// Debug text - may be removed before 1.0
-  let dbg (text : unit -> string) =
-#if DEBUG
-    System.Console.WriteLine (sprintf "[RavenSession] %s" (text ()))
-#endif
-    ()
+  /// Log access point
+  let log = LogUtils<RavenDBSessionStore> cfg.LogLevel
 
   /// Create the index on the last accessed date/time if it does not exist
   let ensureIndex () =
@@ -99,19 +97,19 @@ and RavenDBSessionStore (cfg : RavenDBSessionConfiguration) =
       ensureIndex ()
 
     member __.RetrieveSession sessId =
-      dbg (fun () -> sprintf "Retrieving session Id %s" sessId)
+      log.dbug (fun () -> sprintf "Retrieving session Id %s" sessId)
       use sess = newSession ()
       match (collId >> sess.LoadAsync<RavenDBSessionDocument> >> await >> box) sessId with
       | null ->
-          dbg (fun () -> sprintf "Session Id %s not found" sessId)
+          log.dbug (fun () -> sprintf "Session Id %s not found" sessId)
           null
       | d ->
-          dbg (fun () -> sprintf "Found session Id %s" sessId)
+          log.dbug (fun () -> sprintf "Found session Id %s" sessId)
           (unbox<RavenDBSessionDocument> d).ToSession ()
 
     member this.CreateNewSession () =
       let sessId = (Guid.NewGuid >> string) ()
-      dbg (fun () -> sprintf "Creating new session with Id %s" sessId)
+      log.info (fun () -> sprintf "Creating new session with Id %s" sessId)
       use sess = newSession ()
       sess.StoreAsync (
           { RavenDBSessionDocument.Empty with
@@ -123,13 +121,13 @@ and RavenDBSessionStore (cfg : RavenDBSessionConfiguration) =
       (this :> IPersistableSessionStore).RetrieveSession sessId
   
     member __.UpdateLastAccessed sessId =
-      dbg (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
+      log.dbug (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
       use sess = newSession ()
       setLastAccessedNow ((string >> collId) sessId) sess
       (sess.SaveChangesAsync >> await') ()
 
     member __.UpdateSession session =
-      dbg (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
+      log.dbug (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
       use sess = newSession ()
       let sessId = (string >> collId) session.Id
       match cfg.UseRollingSessions with true -> setLastAccessedNow sessId sess | false -> ()
@@ -137,7 +135,7 @@ and RavenDBSessionStore (cfg : RavenDBSessionConfiguration) =
       (sess.SaveChangesAsync >> await') ()
 
     member __.ExpireSessions () =
-      dbg (fun () -> "Expiring sessions")
+      log.dbug (fun () -> "Expiring sessions")
       use sess = newSession ()
       let maxAge = DateTime.Now - cfg.Expiry
       sess.Query<RavenDBSessionDocument>(sprintf "%s/ByLastAccessed" cfg.Collection)

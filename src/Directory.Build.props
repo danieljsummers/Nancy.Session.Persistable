@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <VersionPrefix>0.9.9</VersionPrefix>
-    <PackageReleaseNotes>Bug fix for RavenDB provider</PackageReleaseNotes>
+    <VersionPrefix>0.9.10</VersionPrefix>
+    <VersionSuffix>a</VersionSuffix>
+    <PackageReleaseNotes>Added logging configuration parameter; bug fix for RavenDB provider</PackageReleaseNotes>
     <Authors>danieljsummers</Authors>
     <Company>Bit Badger Solutions</Company>
     <PackageProjectUrl>https://github.com/danieljsummers/Nancy.Session.Persistable</PackageProjectUrl>

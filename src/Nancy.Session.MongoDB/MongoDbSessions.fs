@@ -45,12 +45,8 @@ and MongoDBSessionStore (cfg : MongoDBSessionConfiguration) =
   let await  task = task |> (Async.AwaitTask >> Async.RunSynchronously)
   let await' task = task |> (Async.AwaitIAsyncResult >> Async.Ignore >> Async.RunSynchronously)
 
-  /// Debug text - may be removed before 1.0
-  let dbg (text : unit -> string) =
-#if DEBUG
-    System.Console.WriteLine (sprintf "[MongoSession] %s" (text ()))
-#endif
-    ()
+  /// Log access point
+  let log = LogUtils<MongoDBSessionStore> cfg.LogLevel
   
   /// Shorthand to get the document collection
   let collection () = cfg.Client.GetDatabase(cfg.Database).GetCollection<MongoSession> cfg.Collection
@@ -68,30 +64,30 @@ and MongoDBSessionStore (cfg : MongoDBSessionConfiguration) =
       |> (CreateIndexModel >> collection().Indexes.CreateOneAsync >> await >> ignore)
 
     member __.RetrieveSession sessId =
-      dbg (fun () -> sprintf "Retrieving session Id %s" sessId)
+      log.dbug (fun () -> sprintf "Retrieving session Id %s" sessId)
       match (byId >> collection().FindAsync >> await >> firstOrDefault) sessId with
       | null ->
-          dbg (fun () -> sprintf "Session Id %s not found" sessId)
+          log.dbug (fun () -> sprintf "Session Id %s not found" sessId)
           null
       | doc ->
-          dbg (fun () -> sprintf "Found session Id %s" sessId)
+          log.dbug (fun () -> sprintf "Found session Id %s" sessId)
           doc.ToSession ()
 
     member __.CreateNewSession () =
       let sessId = Guid.NewGuid ()
-      dbg (fun () -> sprintf "Creating new session with Id %s" (string sessId))
+      log.info (fun () -> sprintf "Creating new session with Id %s" (string sessId))
       let doc = MongoSession (sessId, DateTime.Now, Dictionary<string, obj> ())
       (collection().InsertOneAsync >> await') doc
       doc.ToSession ()
   
     member __.UpdateLastAccessed sessId =
-      dbg (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
+      log.dbug (fun () -> sprintf "Updating last accessed for session Id %s" (string sessId))
       collection().UpdateOneAsync
         ((string >> byId) sessId, Builders<MongoSession>.Update.Set ((fun sess -> sess.LastAccessed), DateTime.Now))
       |> (await >> ignore)
 
     member __.UpdateSession session =
-      dbg (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
+      log.dbug (fun () -> sprintf "Updating session data for session Id %s" (string session.Id))
       collection().ReplaceOneAsync (
         (string >> byId) session.Id,
         MongoSession (
@@ -100,6 +96,6 @@ and MongoDBSessionStore (cfg : MongoDBSessionConfiguration) =
       |> (await >> ignore)
 
     member __.ExpireSessions () =
-      dbg (fun () -> "Expiring sessions")
+      log.dbug (fun () -> "Expiring sessions")
       Builders<MongoSession>.Filter.Lt ((fun sess -> sess.LastAccessed), DateTime.Now - cfg.Expiry)
       |> (collection().DeleteManyAsync >> await >> ignore)
