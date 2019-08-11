@@ -113,7 +113,7 @@ type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfigurati
 /// Logging utilities for use by session store implementations
 type LogUtils<'T> (level) as this =
   
-  let name = this.GetType().GenericTypeArguments.[0].FullName
+  let name = this.GetType().GenericTypeArguments.[0].Name
 
   /// Debug text; set SessionLogLevel.Debug to display
   member __.dbug (text : unit -> string) =
