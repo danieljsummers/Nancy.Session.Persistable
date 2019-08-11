@@ -63,14 +63,14 @@ and [<AllowNullLiteral>] IPersistableSessionConfiguration =
 [<AllowNullLiteral>]
 type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfiguration) as this =
 
-  do
-    this.SetSerializer ()
-  
   let mutable _useRollingSessions   = true
   let mutable _expiry               = TimeSpan (2, 0, 0)
   let mutable _expiryCheckFrequency = TimeSpan (0, 1, 0)
   let mutable _logLevel             = SessionLogLevel.None
 
+  //do
+  //  this.SetSerializer ()
+  
   abstract Store : IPersistableSessionStore with get
 
   member __.CookieConfiguration = 
@@ -98,7 +98,7 @@ type BasePersistableSessionConfiguration (cryptoConfig : CryptographyConfigurati
   abstract IsValid : bool with get
   default this.IsValid with get () = this.CookieConfiguration.IsValid
 
-  member private this.SetSerializer () = this.CookieConfiguration.Serializer <- DefaultObjectSerializer ()
+  //member private this.SetSerializer () = this.CookieConfiguration.Serializer <- DefaultObjectSerializer ()
 
   interface IPersistableSessionConfiguration with
     member this.Store                with get () = this.Store
