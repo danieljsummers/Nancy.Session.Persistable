@@ -1,3 +1,7 @@
+## NOTE _(April 2024)_
+
+The Nancy project is no longer active; this project has followed its lead.
+
 # Nancy.Session.Persistable
 
 This is a community project that provides several session store implementations for Nancy, the lean-and-mean web framework that runs under the .NET framework.  It also provides extensions to the Nancy ```Request``` object that allow strongly-typed retrieval of objects from the session.  It uses cookies to associate the session Id with a request.
